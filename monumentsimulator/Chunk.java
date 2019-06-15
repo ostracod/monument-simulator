@@ -3,6 +3,8 @@ package monumentsimulator;
 
 import java.util.Random;
 
+import monumentsimulator.tile.Tile;
+
 public class Chunk {
     
     public static int size = 128;
@@ -21,11 +23,17 @@ public class Chunk {
         }
     }
     
-    public static void convertPosToChunkPos(Pos pos) {
-        pos.setX(Math.floorMod(pos.getX(), size));
-        pos.setY(Math.floorMod(pos.getY(), size));
+    public Tile getTile(Pos inputPos) {
+        int offsetX = inputPos.getX() - pos.getX();
+        int offsetY = inputPos.getY() - pos.getY();
+        int tempTileNumber = tileNumberList[offsetX + offsetY * size];
+        return Tile.getTileFromNumber(tempTileNumber);
     }
     
+    public static void convertPosToChunkPos(Pos inputPos) {
+        inputPos.setX(Math.floorDiv(inputPos.getX(), size) * size);
+        inputPos.setY(Math.floorDiv(inputPos.getY(), size) * size);
+    }
 }
 
 

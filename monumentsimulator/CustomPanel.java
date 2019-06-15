@@ -12,6 +12,8 @@ import java.awt.image.DataBufferInt;
 
 import javax.swing.JPanel;
 
+import monumentsimulator.tile.Tile;
+
 public class CustomPanel extends JPanel {
     
     World world;
@@ -20,6 +22,8 @@ public class CustomPanel extends JPanel {
     private int bufferedImageSize;
     private BufferedImage bufferedImage;
     private int[] pixelArray;
+    private Pos cameraPos = new Pos(0, -20);
+    
     private static Color textColor = new Color(255, 255, 255);
     private static Font textFont = new Font("Verdana", Font.PLAIN, 16);
     
@@ -43,9 +47,19 @@ public class CustomPanel extends JPanel {
     
     public void generateImage() {
         int index = 0;
-        while (index < pixelArray.length) {
-            pixelArray[index] = random.nextInt(256) << 16;
+        Pos tempOffset = new Pos(0, 0);
+        Pos tempPos = new Pos(0, 0);
+        while (tempOffset.getY() < bufferedImageSize) {
+            tempPos.set(cameraPos);
+            tempPos.add(tempOffset);
+            Tile tempTile = world.getTile(tempPos);
+            pixelArray[index] = tempTile.getColor(tempPos);
             index += 1;
+            tempOffset.setX(tempOffset.getX() + 1);
+            if (tempOffset.getX() >= bufferedImageSize) {
+                tempOffset.setX(0);
+                tempOffset.setY(tempOffset.getY() + 1);
+            }
         }
     }
     

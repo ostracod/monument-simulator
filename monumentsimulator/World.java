@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import java.io.File;
 import java.nio.file.Paths;
 
+import monumentsimulator.tile.Tile;
+
 public class World {
     
     private String worldPath = "./monumentWorld";
@@ -14,6 +16,7 @@ public class World {
     private File worldDirectory;
     private File chunksDirectory;
     private Map<Pos, Chunk> chunkMap = new Hashtable<Pos, Chunk>(100);
+    private Pos lookUpPos = new Pos(0, 0);
     
     public World() {
         worldDirectory = new File(worldPath);
@@ -24,17 +27,24 @@ public class World {
         if (!chunksDirectory.exists()) {
             chunksDirectory.mkdir();
         }
-        getChunk(new Pos(0, 0), true);
     }
     
-    // pos must conform to chunk spacing.
-    public Chunk getChunk(Pos pos, boolean shouldCreateIfMissing) {
-        Chunk output = chunkMap.get(pos);
-        if (output == null && shouldCreateIfMissing) {
-            output = new Chunk(pos);
-            chunkMap.put(pos, output);
+    public Chunk getChunk(Pos pos) {
+        // We use lookUpPos to avoid creating a Pos instance
+        // every time we want to find a chunk.
+        lookUpPos.set(pos);
+        Chunk.convertPosToChunkPos(lookUpPos);
+        Chunk output = chunkMap.get(lookUpPos);
+        if (output == null) {
+            output = new Chunk(lookUpPos.copy());
+            chunkMap.put(lookUpPos, output);
         }
         return output;
+    }
+    
+    public Tile getTile(Pos pos) {
+        Chunk tempChunk = getChunk(pos);
+        return tempChunk.getTile(pos);
     }
 }
 

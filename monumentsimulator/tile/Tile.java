@@ -4,6 +4,10 @@ package monumentsimulator.tile;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.awt.Color;
+
+import monumentsimulator.Pos;
+
 public abstract class Tile {
     
     public static Tile EMPTY;
@@ -27,6 +31,15 @@ public abstract class Tile {
         tileList.set(number, this);
     }
     
+    public int getNumber() {
+        return number;
+    }
+    
+    public abstract int getColor(Pos pos);
+    
+    public static Tile getTileFromNumber(int inputNumber) {
+        return tileList.get(inputNumber);
+    }
 }
 
 
