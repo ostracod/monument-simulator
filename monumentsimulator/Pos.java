@@ -51,6 +51,14 @@ public class Pos {
         y *= number;
     }
     
+    public void advance(int offset, int startX, int endX) {
+        x += offset;
+        if (x >= endX) {
+            x = startX;
+            y += offset;
+        }
+    }
+    
     @Override
     public int hashCode() {
         return (x + 30000) + ((y + 30000) << 16);

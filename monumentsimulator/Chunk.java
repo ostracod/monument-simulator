@@ -70,15 +70,11 @@ public class Chunk {
             tempPos.set(pos);
             tempPos.add(tempOffset);
             if (tempPos.getY() > 0) {
-                if (random.nextInt(750) == 0) {
+                if (random.nextInt(500) == 0) {
                     world.addStoneCluster(tempPos);
                 }
             }
-            tempOffset.setX(tempOffset.getX() + 1);
-            if (tempOffset.getX() >= size) {
-                tempOffset.setX(0);
-                tempOffset.setY(tempOffset.getY() + 1);
-            }
+            tempOffset.advance(1, 0, size);
         }
     }
     
@@ -95,11 +91,7 @@ public class Chunk {
                 tempPos.add(tempOffset);
                 Chunk tempChunk = world.getChunk(tempPos);
                 tempChunk.advanceMaturity((byte)1);
-                tempOffset.setX(tempOffset.getX() + size);
-                if (tempOffset.getX() > size) {
-                    tempOffset.setX(-size);
-                    tempOffset.setY(tempOffset.getY() + size);
-                }
+                tempOffset.advance(size, -size, size * 2);
             }
             maturity = 2;
         }

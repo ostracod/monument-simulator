@@ -55,11 +55,7 @@ public class CustomPanel extends JPanel {
             Tile tempTile = world.getTile(tempPos, true);
             pixelArray[index] = tempTile.getColor(tempPos);
             index += 1;
-            tempOffset.setX(tempOffset.getX() + 1);
-            if (tempOffset.getX() >= bufferedImageSize) {
-                tempOffset.setX(0);
-                tempOffset.setY(tempOffset.getY() + 1);
-            }
+            tempOffset.advance(1, 0, bufferedImageSize);
         }
     }
     

@@ -9,6 +9,7 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import monumentsimulator.tile.Tile;
+import monumentsimulator.tile.StoneTile;
 
 public class World {
     
@@ -82,17 +83,25 @@ public class World {
     
     public void addStoneCluster(Pos inputPos) {
         int tempSize = 6 + random.nextInt(15);
+        // Make sure that the cluster does not collide with other clusters.
         Pos tempOffset = new Pos(0, 0);
         Pos tempPos = new Pos(0, 0);
         while (tempOffset.getY() < tempSize) {
             tempPos.set(inputPos);
             tempPos.add(tempOffset);
-            setTile(tempPos, Tile.STONE, false);
-            tempOffset.setX(tempOffset.getX() + 1);
-            if (tempOffset.getX() >= tempSize) {
-                tempOffset.setX(0);
-                tempOffset.setY(tempOffset.getY() + 1);
+            Tile tempTile = getTile(tempPos, false);
+            if (tempTile instanceof StoneTile) {
+                return;
             }
+            tempOffset.advance(1, 0, tempSize);
+        }
+        // If there were no collisions, place the cluster.
+        tempOffset = new Pos(0, 0);
+        while (tempOffset.getY() < tempSize) {
+            tempPos.set(inputPos);
+            tempPos.add(tempOffset);
+            setTile(tempPos, Tile.STONE, false);
+            tempOffset.advance(1, 0, tempSize);
         }
     }
 }
