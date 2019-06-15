@@ -2,6 +2,7 @@
 package monumentsimulator;
 
 import java.util.Random;
+import java.util.Arrays;
 
 import java.io.File;
 import java.io.DataInputStream;
@@ -22,7 +23,11 @@ public class Chunk {
     private World world;
     private Pos pos;
     private byte[] tileNumberList = new byte[size * size];
-    private boolean isMature;
+    // Maturity values:
+    // 0 = Just solid dirt.
+    // 1 = Stone clusters populated in current chunk.
+    // 2 = Stone clusters populated in adjacent chunks.
+    private byte maturity;
     private String path;
     private File file;
     private boolean isDirty;
@@ -38,8 +43,7 @@ public class Chunk {
         if (file.exists()) {
             try {
                 DataInputStream tempStream = new DataInputStream(new FileInputStream(path));
-                byte tempValue = tempStream.readByte();
-                isMature = (tempValue != 0);
+                maturity = tempStream.readByte();
                 tempStream.read(tileNumberList);
                 tempStream.close();
             } catch(IOException exception) {
@@ -47,27 +51,86 @@ public class Chunk {
             }
             isDirty = false;
         } else {
-            int index = 0;
-            while (index < tileNumberList.length) {
-                byte tempTileNumber;
-                if (random.nextInt(5) == 0) {
-                    tempTileNumber = 1;
-                } else {
-                    tempTileNumber = 0;
-                }
-                tileNumberList[index] = tempTileNumber;
-                index += 1;
+            Tile tempTile;
+            if (pos.getY() < 0) {
+                tempTile = Tile.EMPTY;
+            } else {
+                tempTile = Tile.DIRT;
             }
-            isMature = false;
+            Arrays.fill(tileNumberList, tempTile.getNumber());
+            maturity = 0;
             isDirty = true;
         }
     }
     
-    public Tile getTile(Pos inputPos) {
+    public void addStoneClusters() {
+        Pos tempOffset = new Pos(0, 0);
+        Pos tempPos = new Pos(0, 0);
+        while (tempOffset.getY() < size) {
+            tempPos.set(pos);
+            tempPos.add(tempOffset);
+            if (tempPos.getY() > 0) {
+                if (random.nextInt(750) == 0) {
+                    world.addStoneCluster(tempPos);
+                }
+            }
+            tempOffset.setX(tempOffset.getX() + 1);
+            if (tempOffset.getX() >= size) {
+                tempOffset.setX(0);
+                tempOffset.setY(tempOffset.getY() + 1);
+            }
+        }
+    }
+    
+    public void advanceMaturity(byte inputMaturity) {
+        if (maturity == 0 && inputMaturity > 0) {
+            addStoneClusters();
+            maturity = 1;
+        }
+        if (maturity == 1 && inputMaturity > 1) {
+            Pos tempOffset = new Pos(-size, -size);
+            Pos tempPos = new Pos(0, 0);
+            while (tempOffset.getY() <= size) {
+                tempPos.set(pos);
+                tempPos.add(tempOffset);
+                Chunk tempChunk = world.getChunk(tempPos);
+                tempChunk.advanceMaturity((byte)1);
+                tempOffset.setX(tempOffset.getX() + size);
+                if (tempOffset.getX() > size) {
+                    tempOffset.setX(-size);
+                    tempOffset.setY(tempOffset.getY() + size);
+                }
+            }
+            maturity = 2;
+        }
+    }
+    
+    private int getPosTileIndex(Pos inputPos) {
         int offsetX = inputPos.getX() - pos.getX();
         int offsetY = inputPos.getY() - pos.getY();
-        byte tempTileNumber = tileNumberList[offsetX + offsetY * size];
+        return offsetX + offsetY * size;
+    }
+    
+    public Tile getTile(Pos inputPos, boolean shouldBeMature) {
+        if (shouldBeMature && maturity < 2) {
+            advanceMaturity((byte)2);
+        }
+        int index = getPosTileIndex(inputPos);
+        byte tempTileNumber = tileNumberList[index];
         return Tile.getTileFromNumber(tempTileNumber);
+    }
+    
+    public void setTile(Pos inputPos, Tile tile, boolean shouldBeMature) {
+        if (shouldBeMature && maturity < 2) {
+            advanceMaturity((byte)2);
+        }
+        byte tempNextTileNumber = tile.getNumber();
+        int index = getPosTileIndex(inputPos);
+        byte tempPreviousTileNumber = tileNumberList[index];
+        if (tempNextTileNumber == tempPreviousTileNumber) {
+            return;
+        }
+        tileNumberList[index] = tempNextTileNumber;
     }
     
     public void persist() {
@@ -76,11 +139,7 @@ public class Chunk {
         }
         try {
             DataOutputStream tempStream = new DataOutputStream(new FileOutputStream(path));
-            if (isMature) {
-                tempStream.writeByte(1);
-            } else {
-                tempStream.writeByte(0);
-            }
+            tempStream.writeByte(maturity);
             tempStream.write(tileNumberList);
             tempStream.close();
         } catch(IOException exception) {

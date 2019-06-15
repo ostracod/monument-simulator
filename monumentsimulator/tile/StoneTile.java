@@ -5,13 +5,13 @@ import java.awt.Color;
 
 import monumentsimulator.Pos;
 
-public class DirtTile extends Tile {
+public class StoneTile extends Tile {
     
     private int color;
     
-    public DirtTile() {
-        super((byte)1);
-        Color tempColor = new Color(128, 64, 32);
+    public StoneTile() {
+        super((byte)2);
+        Color tempColor = new Color(112, 112, 112);
         color = tempColor.getRGB();
     }
     

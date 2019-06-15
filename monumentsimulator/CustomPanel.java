@@ -52,7 +52,7 @@ public class CustomPanel extends JPanel {
         while (tempOffset.getY() < bufferedImageSize) {
             tempPos.set(cameraPos);
             tempPos.add(tempOffset);
-            Tile tempTile = world.getTile(tempPos);
+            Tile tempTile = world.getTile(tempPos, true);
             pixelArray[index] = tempTile.getColor(tempPos);
             index += 1;
             tempOffset.setX(tempOffset.getX() + 1);
@@ -77,6 +77,10 @@ public class CustomPanel extends JPanel {
     
     public int getHeight() {
         return size;
+    }
+    
+    public Pos getCameraPos() {
+        return cameraPos;
     }
     
     public void zoomIn() {

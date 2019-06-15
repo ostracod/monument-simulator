@@ -12,8 +12,8 @@ public class EmptyTile extends Tile {
     
     public EmptyTile() {
         super((byte)0);
-        Color tempAboveGroundColor = new Color(192, 192, 192);
-        Color tempBelowGroundColor = new Color(64, 32, 0);
+        Color tempAboveGroundColor = new Color(32, 64, 96);
+        Color tempBelowGroundColor = new Color(64, 32, 16);
         aboveGroundColor = tempAboveGroundColor.getRGB();
         belowGroundColor = tempBelowGroundColor.getRGB();
     }

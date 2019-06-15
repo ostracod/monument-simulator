@@ -3,6 +3,7 @@ package monumentsimulator;
 
 import java.util.Map;
 import java.util.Hashtable;
+import java.util.Random;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -17,7 +18,9 @@ public class World {
     private File chunksDirectory;
     private Map<Pos, Chunk> chunkMap = new Hashtable<Pos, Chunk>(100);
     private Pos lookUpPos = new Pos(0, 0);
-    private static int persistDelay = 0;
+    private int persistDelay = 0;
+    
+    private static Random random = new Random();
     
     public World() {
         worldDirectory = new File(worldPath);
@@ -43,9 +46,14 @@ public class World {
         return output;
     }
     
-    public Tile getTile(Pos pos) {
+    public Tile getTile(Pos pos, boolean shouldBeMature) {
         Chunk tempChunk = getChunk(pos);
-        return tempChunk.getTile(pos);
+        return tempChunk.getTile(pos, shouldBeMature);
+    }
+    
+    public void setTile(Pos pos, Tile tile, boolean shouldBeMature) {
+        Chunk tempChunk = getChunk(pos);
+        tempChunk.setTile(pos, tile, shouldBeMature);
     }
     
     public String getChunksPath() {
@@ -69,6 +77,22 @@ public class World {
         if (persistDelay > 1800) {
             persist();
             persistDelay = 0;
+        }
+    }
+    
+    public void addStoneCluster(Pos inputPos) {
+        int tempSize = 6 + random.nextInt(15);
+        Pos tempOffset = new Pos(0, 0);
+        Pos tempPos = new Pos(0, 0);
+        while (tempOffset.getY() < tempSize) {
+            tempPos.set(inputPos);
+            tempPos.add(tempOffset);
+            setTile(tempPos, Tile.STONE, false);
+            tempOffset.setX(tempOffset.getX() + 1);
+            if (tempOffset.getX() >= tempSize) {
+                tempOffset.setX(0);
+                tempOffset.setY(tempOffset.getY() + 1);
+            }
         }
     }
 }

@@ -82,6 +82,23 @@ public class MonumentSimulator {
         if (keyCode == 45 && !shiftKeyIsHeld) {
             panel.zoomOut();
         }
+        Pos tempCameraPos = panel.getCameraPos();
+        // Left / A.
+        if (keyCode == 37 || keyCode == 65) {
+            tempCameraPos.setX(tempCameraPos.getX() - 1);
+        }
+        // Right / D.
+        if (keyCode == 39 || keyCode == 68) {
+            tempCameraPos.setX(tempCameraPos.getX() + 1);
+        }
+        // Up / W.
+        if (keyCode == 38 || keyCode == 87) {
+            tempCameraPos.setY(tempCameraPos.getY() - 1);
+        }
+        // Down / S.
+        if (keyCode == 40 || keyCode == 83) {
+            tempCameraPos.setY(tempCameraPos.getY() + 1);
+        }
     }
     
     public static void keyReleasedEvent(int keyCode) {
