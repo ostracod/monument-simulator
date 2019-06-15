@@ -1,16 +1,22 @@
 
-##Monument Simulator
+## Monument Simulator
 
 To build:
 
-```javac ./monumentsimulator/*.java```
+```
+javac ./monumentsimulator/*.java
+```
 
 To run:
 
-```java monumentsimulator.MonumentSimulator```
+```
+java monumentsimulator.MonumentSimulator
+```
 
 To package:
 
-```jar cmf ./manifest.mf ./MonumentSimulator.jar ./monumentsimulator/*.class```
+```
+jar cmf ./manifest.mf ./MonumentSimulator.jar ./monumentsimulator/*.class
+```
 
 
