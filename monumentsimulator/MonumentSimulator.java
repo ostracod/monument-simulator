@@ -21,7 +21,7 @@ public class MonumentSimulator {
     
     public static void main(String[] args){
         
-        System.out.println("Starting up!");
+        System.out.println("Starting up...");
         world = new World();
         JFrame frame = new JFrame();
         panel = new CustomPanel(world);
@@ -38,6 +38,7 @@ public class MonumentSimulator {
         frame.setVisible(true);
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                world.timerEvent();
                 panel.generateImage();
                 panel.repaint();
             }
@@ -91,7 +92,7 @@ public class MonumentSimulator {
     }
     
     public static void cleanUp() {
-        System.out.println("Goodbye!");
+        world.persist();
     }
 }
 

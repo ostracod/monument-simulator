@@ -15,7 +15,7 @@ public abstract class Tile {
     
     private static List<Tile> tileList;
     
-    private int number;
+    private byte number;
     
     static {
         tileList = new ArrayList<Tile>();
@@ -23,7 +23,7 @@ public abstract class Tile {
         DIRT = new DirtTile();
     }
     
-    public Tile(int inputNumber) {
+    public Tile(byte inputNumber) {
         number = inputNumber;
         while (tileList.size() <= number) {
             tileList.add(null);
@@ -31,7 +31,7 @@ public abstract class Tile {
         tileList.set(number, this);
     }
     
-    public int getNumber() {
+    public byte getNumber() {
         return number;
     }
     

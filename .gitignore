@@ -2,5 +2,5 @@
 *.class
 *.jar
 monumentWorld
-
+.DS_Store
 

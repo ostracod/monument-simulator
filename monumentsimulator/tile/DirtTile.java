@@ -10,7 +10,7 @@ public class DirtTile extends Tile {
     private int color;
     
     public DirtTile() {
-        super(1);
+        super((byte)1);
         Color tempColor = new Color(128, 64, 0);
         color = tempColor.getRGB();
     }

@@ -17,6 +17,7 @@ public class World {
     private File chunksDirectory;
     private Map<Pos, Chunk> chunkMap = new Hashtable<Pos, Chunk>(100);
     private Pos lookUpPos = new Pos(0, 0);
+    private static int persistDelay = 0;
     
     public World() {
         worldDirectory = new File(worldPath);
@@ -36,7 +37,7 @@ public class World {
         Chunk.convertPosToChunkPos(lookUpPos);
         Chunk output = chunkMap.get(lookUpPos);
         if (output == null) {
-            output = new Chunk(lookUpPos.copy());
+            output = new Chunk(lookUpPos.copy(), this);
             chunkMap.put(lookUpPos, output);
         }
         return output;
@@ -45,6 +46,30 @@ public class World {
     public Tile getTile(Pos pos) {
         Chunk tempChunk = getChunk(pos);
         return tempChunk.getTile(pos);
+    }
+    
+    public String getChunksPath() {
+        return chunksPath;
+    }
+    
+    public File getChunksDirectory() {
+        return chunksDirectory;
+    }
+    
+    public void persist() {
+        System.out.println("Persisting world...");
+        for (Chunk chunk : chunkMap.values()) {
+            chunk.persist();
+        }
+        System.out.println("Finished persisting world.");
+    }
+    
+    public void timerEvent() {
+        persistDelay += 1;
+        if (persistDelay > 1800) {
+            persist();
+            persistDelay = 0;
+        }
     }
 }
 
