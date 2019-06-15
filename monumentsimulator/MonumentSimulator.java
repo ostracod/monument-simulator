@@ -15,11 +15,14 @@ import javax.swing.Timer;
 
 public class MonumentSimulator {
     
+    private static CustomPanel panel;
+    private static boolean shiftKeyIsHeld = false;
+    
     public static void main(String[] args){
         
         System.out.println("Starting up!");
         JFrame frame = new JFrame();
-        CustomPanel panel = new CustomPanel();
+        panel = new CustomPanel();
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.pack();
         frame.setSize(512, 512);
@@ -42,11 +45,11 @@ public class MonumentSimulator {
         KeyListener keyListener = new KeyListener() {
             public void keyPressed(KeyEvent actionEvent) {
                 int keyCode = actionEvent.getKeyCode();
-                System.out.println("Key pressed! " + keyCode);
+                keyPressedEvent(keyCode);
             }
             public void keyReleased(KeyEvent actionEvent) {
                 int keyCode = actionEvent.getKeyCode();
-                System.out.println("Key released! " + keyCode);
+                keyReleasedEvent(keyCode);
             }
             public void keyTyped(KeyEvent actionEvent) {
                 // Do nothing.
@@ -63,6 +66,26 @@ public class MonumentSimulator {
                 cleanUp();
             }
         });
+    }
+    
+    public static void keyPressedEvent(int keyCode) {
+        System.out.println("Key pressed! " + keyCode);
+        if (keyCode == 16) {
+            shiftKeyIsHeld = true;
+        }
+        if (keyCode == 61 && shiftKeyIsHeld) {
+            panel.zoomIn();
+        }
+        if (keyCode == 45 && !shiftKeyIsHeld) {
+            panel.zoomOut();
+        }
+    }
+    
+    public static void keyReleasedEvent(int keyCode) {
+        System.out.println("Key released! " + keyCode);
+        if (keyCode == 16) {
+            shiftKeyIsHeld = false;
+        }
     }
     
     public static void cleanUp() {

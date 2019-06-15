@@ -14,9 +14,9 @@ import javax.swing.JPanel;
 
 public class CustomPanel extends JPanel {
     
-    private int width = 512;
-    private int height = 512;
+    private int size = 512;
     private Random random;
+    private int bufferedImageSize;
     private BufferedImage bufferedImage;
     private int[] pixelArray;
     private static Color textColor = new Color(255, 255, 255);
@@ -25,7 +25,16 @@ public class CustomPanel extends JPanel {
     public CustomPanel() {
         super();
         random = new Random();
-        bufferedImage = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
+        setUpBufferedImage(64);
+    }
+    
+    public void setUpBufferedImage(int imageSize) {
+        bufferedImageSize = imageSize;
+        bufferedImage = new BufferedImage(
+            bufferedImageSize,
+            bufferedImageSize,
+            BufferedImage.TYPE_INT_RGB
+        );
         WritableRaster tempRaster = bufferedImage.getRaster();
         DataBufferInt tempBuffer = (DataBufferInt)(tempRaster.getDataBuffer());
         pixelArray = tempBuffer.getData();
@@ -41,20 +50,35 @@ public class CustomPanel extends JPanel {
     
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        graphics.drawImage(bufferedImage, 0, 0, width, height, this);
+        graphics.drawImage(bufferedImage, 0, 0, size, size, this);
         graphics.setFont(textFont);
         graphics.setColor(textColor);
         graphics.drawString("WOW HELLO!!!", 10, 50);
     }
     
     public int getWidth() {
-        return width;
+        return size;
     }
     
     public int getHeight() {
-        return height;
+        return size;
     }
     
+    public void zoomIn() {
+        int tempNextSize = bufferedImageSize / 2;
+        if (tempNextSize < 16) {
+            return;
+        }
+        setUpBufferedImage(tempNextSize);
+    }
+    
+    public void zoomOut() {
+        int tempNextSize = bufferedImageSize * 2;
+        if (tempNextSize > size) {
+            return;
+        }
+        setUpBufferedImage(tempNextSize);
+    }
 }
 
 
