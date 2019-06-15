@@ -15,14 +15,16 @@ import javax.swing.Timer;
 
 public class MonumentSimulator {
     
+    private static World world;
     private static CustomPanel panel;
     private static boolean shiftKeyIsHeld = false;
     
     public static void main(String[] args){
         
         System.out.println("Starting up!");
+        world = new World();
         JFrame frame = new JFrame();
-        panel = new CustomPanel();
+        panel = new CustomPanel(world);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.pack();
         frame.setSize(512, 512);

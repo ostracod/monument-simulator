@@ -14,17 +14,18 @@ import javax.swing.JPanel;
 
 public class CustomPanel extends JPanel {
     
+    World world;
     private int size = 512;
-    private Random random;
+    private Random random = new Random();
     private int bufferedImageSize;
     private BufferedImage bufferedImage;
     private int[] pixelArray;
     private static Color textColor = new Color(255, 255, 255);
-    private static Font textFont = new Font("Verdana", Font.PLAIN, 16);;
+    private static Font textFont = new Font("Verdana", Font.PLAIN, 16);
     
-    public CustomPanel() {
+    public CustomPanel(World inputWorld) {
         super();
-        random = new Random();
+        world = inputWorld;
         setUpBufferedImage(64);
     }
     
