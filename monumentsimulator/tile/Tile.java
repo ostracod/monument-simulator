@@ -41,7 +41,28 @@ public abstract class Tile {
         return number;
     }
     
+    @Override
+    public int hashCode() {
+        return getNumber();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (!(object instanceof Tile)) {
+            return false;
+        }
+        Tile tempTile = (Tile)object;
+        return (number == tempTile.getNumber());
+    }
+    
     public abstract int getColor(Pos pos);
+    
+    public Tile getMiningDrop() {
+        return null;
+    }
     
     public static Tile getTileFromNumber(int inputNumber) {
         return tileList.get(inputNumber);

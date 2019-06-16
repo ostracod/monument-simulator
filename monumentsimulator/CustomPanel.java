@@ -25,12 +25,12 @@ public class CustomPanel extends JPanel {
     private Pos cameraPos = new Pos(0, -20);
     
     private static Color textColor = new Color(255, 255, 255);
-    private static Font textFont = new Font("Verdana", Font.PLAIN, 16);
+    private static Font textFont = new Font("Verdana", Font.PLAIN, 14);
     
     public CustomPanel(World inputWorld) {
         super();
         world = inputWorld;
-        setUpBufferedImage(64);
+        setUpBufferedImage(32);
     }
     
     public void setUpBufferedImage(int imageSize) {
@@ -64,10 +64,14 @@ public class CustomPanel extends JPanel {
     
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        Player tempPlayer = world.getPlayer();
+        int tempBrickCount = tempPlayer.getInventoryCount(Tile.BRICK);
+        int tempDirtCount = tempPlayer.getInventoryCount(Tile.DIRT);
         graphics.drawImage(bufferedImage, 0, 0, size, size, this);
         graphics.setFont(textFont);
         graphics.setColor(textColor);
-        graphics.drawString("WOW HELLO!!!", 10, 50);
+        graphics.drawString("Brick: " + tempBrickCount, 8, 20);
+        graphics.drawString("Dirt: " + tempDirtCount, 8, 40);
     }
     
     public int getWidth() {

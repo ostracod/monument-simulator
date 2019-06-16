@@ -18,6 +18,10 @@ public class StoneTile extends Tile {
     public int getColor(Pos pos) {
         return color;
     }
+    
+    public Tile getMiningDrop() {
+        return Tile.BRICK;
+    }
 }
 
 
