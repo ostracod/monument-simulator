@@ -16,7 +16,7 @@ import monumentsimulator.tile.Tile;
 
 public class CustomPanel extends JPanel {
     
-    World world;
+    private World world;
     private int size = 512;
     private Random random = new Random();
     private int bufferedImageSize;
@@ -46,6 +46,9 @@ public class CustomPanel extends JPanel {
     }
     
     public void generateImage() {
+        Pos tempPlayerPos = world.getPlayer().getPos();
+        cameraPos.setX(tempPlayerPos.getX() - bufferedImageSize / 2);
+        cameraPos.setY(tempPlayerPos.getY() - bufferedImageSize / 2);
         int index = 0;
         Pos tempOffset = new Pos(0, 0);
         Pos tempPos = new Pos(0, 0);
@@ -75,8 +78,8 @@ public class CustomPanel extends JPanel {
         return size;
     }
     
-    public Pos getCameraPos() {
-        return cameraPos;
+    public World getWorld() {
+        return world;
     }
     
     public void zoomIn() {

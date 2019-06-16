@@ -20,6 +20,7 @@ public class World {
     private Map<Pos, Chunk> chunkMap = new Hashtable<Pos, Chunk>(100);
     private Pos lookUpPos = new Pos(0, 0);
     private int persistDelay = 0;
+    private Player player;
     
     private static Random random = new Random();
     
@@ -32,6 +33,7 @@ public class World {
         if (!chunksDirectory.exists()) {
             chunksDirectory.mkdir();
         }
+        player = new Player(new Pos(0, -1), this);
     }
     
     public Chunk getChunk(Pos pos) {
@@ -63,6 +65,10 @@ public class World {
     
     public File getChunksDirectory() {
         return chunksDirectory;
+    }
+    
+    public Player getPlayer() {
+        return player;
     }
     
     public void persist() {

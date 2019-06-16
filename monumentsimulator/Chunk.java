@@ -123,6 +123,7 @@ public class Chunk {
             return;
         }
         tileNumberList[index] = tempNextTileNumber;
+        isDirty = true;
     }
     
     public void persist() {

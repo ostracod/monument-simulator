@@ -18,6 +18,12 @@ public class MonumentSimulator {
     private static World world;
     private static CustomPanel panel;
     private static boolean shiftKeyIsHeld = false;
+    private static Pos[] playerOffsetSet = {
+        new Pos(-1, 0),
+        new Pos(1, 0),
+        new Pos(0, -1),
+        new Pos(0, 1)
+    };
     
     public static void main(String[] args){
         
@@ -82,22 +88,22 @@ public class MonumentSimulator {
         if (keyCode == 45 && !shiftKeyIsHeld) {
             panel.zoomOut();
         }
-        Pos tempCameraPos = panel.getCameraPos();
+        Player tempPlayer = panel.getWorld().getPlayer();
         // Left / A.
         if (keyCode == 37 || keyCode == 65) {
-            tempCameraPos.setX(tempCameraPos.getX() - 1);
+            tempPlayer.move(playerOffsetSet[0]);
         }
         // Right / D.
         if (keyCode == 39 || keyCode == 68) {
-            tempCameraPos.setX(tempCameraPos.getX() + 1);
+            tempPlayer.move(playerOffsetSet[1]);
         }
         // Up / W.
         if (keyCode == 38 || keyCode == 87) {
-            tempCameraPos.setY(tempCameraPos.getY() - 1);
+            tempPlayer.move(playerOffsetSet[2]);
         }
         // Down / S.
         if (keyCode == 40 || keyCode == 83) {
-            tempCameraPos.setY(tempCameraPos.getY() + 1);
+            tempPlayer.move(playerOffsetSet[3]);
         }
     }
     

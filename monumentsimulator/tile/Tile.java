@@ -13,6 +13,8 @@ public abstract class Tile {
     public static Tile EMPTY;
     public static Tile DIRT;
     public static Tile STONE;
+    public static Tile BRICK;
+    public static Tile PLAYER;
     
     private static List<Tile> tileList;
     
@@ -23,6 +25,8 @@ public abstract class Tile {
         EMPTY = new EmptyTile();
         DIRT = new DirtTile();
         STONE = new StoneTile();
+        BRICK = new BrickTile();
+        PLAYER = new PlayerTile();
     }
     
     public Tile(byte inputNumber) {
