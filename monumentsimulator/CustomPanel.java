@@ -6,6 +6,7 @@ import java.util.Random;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.awt.image.DataBufferInt;
@@ -13,6 +14,7 @@ import java.awt.image.DataBufferInt;
 import javax.swing.JPanel;
 
 import monumentsimulator.tile.Tile;
+import monumentsimulator.tile.BrickTile;
 
 public class CustomPanel extends JPanel {
     
@@ -25,7 +27,7 @@ public class CustomPanel extends JPanel {
     private Pos cameraPos = new Pos(0, -20);
     
     private static Color textColor = new Color(255, 255, 255);
-    private static Font textFont = new Font("Verdana", Font.PLAIN, 14);
+    private static Font textFont = new Font("Verdana", Font.PLAIN, 15);
     
     public CustomPanel(World inputWorld) {
         super();
@@ -70,8 +72,18 @@ public class CustomPanel extends JPanel {
         graphics.drawImage(bufferedImage, 0, 0, size, size, this);
         graphics.setFont(textFont);
         graphics.setColor(textColor);
-        graphics.drawString("Brick: " + tempBrickCount, 8, 20);
-        graphics.drawString("Dirt: " + tempDirtCount, 8, 40);
+        graphics.drawString("Brick: " + tempBrickCount, 19, 20);
+        graphics.drawString("Dirt: " + tempDirtCount, 19, 40);
+        int tempOffsetY;
+        if (tempPlayer.getSelectedInventoryTile() instanceof BrickTile) {
+            tempOffsetY = 8;
+        } else {
+            tempOffsetY = 28;
+        }
+        int[] posXList = {8, 14, 8};
+        int[] posYList = {0 + tempOffsetY, 6 + tempOffsetY, 12 + tempOffsetY};
+        Polygon tempPolygon = new Polygon(posXList, posYList, posXList.length);
+        graphics.fillPolygon(tempPolygon);
     }
     
     public int getWidth() {

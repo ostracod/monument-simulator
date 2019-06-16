@@ -133,6 +133,14 @@ public class Player {
     public void setInventoryCount(Tile tile, int count) {
         inventory.put(tile, count);
     }
+    
+    public void selectInventoryTile(Tile tile) {
+        selectedInventoryTile = tile;
+    }
+    
+    public Tile getSelectedInventoryTile() {
+        return selectedInventoryTile;
+    }
 }
 
 

@@ -13,6 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import monumentsimulator.tile.Tile;
+
 public class MonumentSimulator {
     
     private static World world;
@@ -113,6 +115,15 @@ public class MonumentSimulator {
         // Down / S.
         if (keyCode == 40 || keyCode == 83) {
             performDirectedPlayerAction(3);
+        }
+        Player tempPlayer = panel.getWorld().getPlayer();
+        // 1.
+        if (keyCode == 49) {
+            tempPlayer.selectInventoryTile(Tile.BRICK);
+        }
+        // 2.
+        if (keyCode == 50) {
+            tempPlayer.selectInventoryTile(Tile.DIRT);
         }
     }
     
