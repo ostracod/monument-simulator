@@ -6,6 +6,11 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import java.io.File;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import monumentsimulator.tile.Tile;
@@ -15,8 +20,10 @@ public class World {
     
     private String worldPath = "./monumentWorld";
     private String chunksPath = Paths.get(worldPath, "chunks").toString();
+    private String statePath = Paths.get(worldPath, "state.dat").toString();
     private File worldDirectory;
     private File chunksDirectory;
+    private File stateFile;
     private Map<Pos, Chunk> chunkMap = new Hashtable<Pos, Chunk>(100);
     private Pos lookUpPos = new Pos(0, 0);
     private int persistDelay = 0;
@@ -27,13 +34,30 @@ public class World {
     public World() {
         worldDirectory = new File(worldPath);
         chunksDirectory = new File(chunksPath);
+        stateFile = new File(statePath);
         if (!worldDirectory.exists()) {
             worldDirectory.mkdir();
         }
         if (!chunksDirectory.exists()) {
             chunksDirectory.mkdir();
         }
-        player = new Player(new Pos(0, -1), this);
+        if (stateFile.exists()) {
+            try {
+                DataInputStream tempStream = new DataInputStream(new FileInputStream(statePath));
+                Pos tempPlayerPos = Pos.readFromStream(tempStream);
+                player = new Player(tempPlayerPos, this);
+                int tempBrickCount = tempStream.readInt();
+                int tempDirtCount = tempStream.readInt();
+                player.setInventoryCount(Tile.BRICK, tempBrickCount);
+                player.setInventoryCount(Tile.DIRT, tempDirtCount);
+                tempStream.close();
+            } catch(IOException exception) {
+                System.out.println(exception.getMessage());
+            }
+        } else {
+            player = new Player(new Pos(0, -1), this);
+        }
+        
     }
     
     public Chunk getChunk(Pos pos) {
@@ -73,6 +97,17 @@ public class World {
     
     public void persist() {
         System.out.println("Persisting world...");
+        try {
+            DataOutputStream tempStream = new DataOutputStream(new FileOutputStream(statePath));
+            player.getPos().writeToStream(tempStream);
+            int tempBrickCount = player.getInventoryCount(Tile.BRICK);
+            int tempDirtCount = player.getInventoryCount(Tile.DIRT);
+            tempStream.writeInt(tempBrickCount);
+            tempStream.writeInt(tempDirtCount);
+            tempStream.close();
+        } catch(IOException exception) {
+            System.out.println(exception.getMessage());
+        }
         for (Chunk chunk : chunkMap.values()) {
             chunk.persist();
         }

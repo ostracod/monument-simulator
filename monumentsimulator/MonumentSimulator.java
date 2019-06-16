@@ -128,7 +128,6 @@ public class MonumentSimulator {
     }
     
     public static void keyReleasedEvent(int keyCode) {
-        System.out.println("Key released! " + keyCode);
         if (keyCode == 16) {
             shiftKeyIsHeld = false;
         }

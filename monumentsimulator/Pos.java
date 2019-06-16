@@ -1,6 +1,10 @@
 
 package monumentsimulator;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 public class Pos {
     
     private int x;
@@ -78,5 +82,14 @@ public class Pos {
     
     public String toString() {
         return "(" + x + ", " + y + ")";
+    }
+    
+    public void writeToStream(DataOutputStream stream) throws IOException {
+        stream.writeInt(x);
+        stream.writeInt(y);
+    }
+    
+    public static Pos readFromStream(DataInputStream stream) throws IOException {
+        return new Pos(stream.readInt(), stream.readInt());
     }
 }
