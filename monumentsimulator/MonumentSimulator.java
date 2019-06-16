@@ -77,6 +77,16 @@ public class MonumentSimulator {
         });
     }
     
+    public static void performDirectedPlayerAction(int direction) {
+        Pos tempOffset = playerOffsetSet[direction];
+        Player tempPlayer = panel.getWorld().getPlayer();
+        if (shiftKeyIsHeld) {
+            tempPlayer.buildOrMine(tempOffset);
+        } else {
+            tempPlayer.move(tempOffset);
+        }
+    }
+    
     public static void keyPressedEvent(int keyCode) {
         System.out.println("Key pressed! " + keyCode);
         if (keyCode == 16) {
@@ -88,22 +98,21 @@ public class MonumentSimulator {
         if (keyCode == 45 && !shiftKeyIsHeld) {
             panel.zoomOut();
         }
-        Player tempPlayer = panel.getWorld().getPlayer();
         // Left / A.
         if (keyCode == 37 || keyCode == 65) {
-            tempPlayer.move(playerOffsetSet[0]);
+            performDirectedPlayerAction(0);
         }
         // Right / D.
         if (keyCode == 39 || keyCode == 68) {
-            tempPlayer.move(playerOffsetSet[1]);
+            performDirectedPlayerAction(1);
         }
         // Up / W.
         if (keyCode == 38 || keyCode == 87) {
-            tempPlayer.move(playerOffsetSet[2]);
+            performDirectedPlayerAction(2);
         }
         // Down / S.
         if (keyCode == 40 || keyCode == 83) {
-            tempPlayer.move(playerOffsetSet[3]);
+            performDirectedPlayerAction(3);
         }
     }
     

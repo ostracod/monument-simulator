@@ -11,7 +11,7 @@ public class BrickTile extends Tile {
     
     public BrickTile() {
         super((byte)3);
-        Color tempColor = new Color(144, 144, 144);
+        Color tempColor = new Color(160, 160, 160);
         color = tempColor.getRGB();
     }
     
