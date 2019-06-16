@@ -83,7 +83,7 @@ public class MonumentSimulator {
         if (shiftKeyIsHeld) {
             tempPlayer.buildOrMine(tempOffset);
         } else {
-            tempPlayer.move(tempOffset);
+            tempPlayer.walk(tempOffset);
         }
     }
     

@@ -80,6 +80,7 @@ public class World {
     }
     
     public void timerEvent() {
+        player.timerEvent();
         persistDelay += 1;
         if (persistDelay > 1800) {
             persist();
