@@ -5,6 +5,7 @@ import java.util.Random;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
@@ -25,9 +26,14 @@ public class CustomPanel extends JPanel {
     private BufferedImage bufferedImage;
     private int[] pixelArray;
     private Pos cameraPos = new Pos(0, -20);
+    private FontMetrics fontMetrics;
     
     private static Color textColor = new Color(255, 255, 255);
+    private static Color barForegroundColor = new Color(255, 255, 255);
+    private static Color barBackgroundColor = new Color(0, 0, 0);
     private static Font textFont = new Font("Verdana", Font.PLAIN, 15);
+    private static int barWidth = 70;
+    private static int barHeight = 5;
     
     public CustomPanel(World inputWorld) {
         super();
@@ -64,6 +70,11 @@ public class CustomPanel extends JPanel {
         }
     }
     
+    public void drawTextRight(Graphics graphics, String text, int posY) {
+        int tempWidth = fontMetrics.stringWidth(text);
+        graphics.drawString(text, size - 8 - tempWidth, posY);
+    }
+    
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
         Player tempPlayer = world.getPlayer();
@@ -72,6 +83,7 @@ public class CustomPanel extends JPanel {
         graphics.drawImage(bufferedImage, 0, 0, size, size, this);
         graphics.setFont(textFont);
         graphics.setColor(textColor);
+        fontMetrics = graphics.getFontMetrics();
         graphics.drawString("Brick: " + tempBrickCount, 19, 20);
         graphics.drawString("Dirt: " + tempDirtCount, 19, 40);
         int tempOffsetY;
@@ -84,6 +96,15 @@ public class CustomPanel extends JPanel {
         int[] posYList = {0 + tempOffsetY, 6 + tempOffsetY, 12 + tempOffsetY};
         Polygon tempPolygon = new Polygon(posXList, posYList, posXList.length);
         graphics.fillPolygon(tempPolygon);
+        if (tempPlayer.getIsMining()) {
+            double tempProgress = tempPlayer.getMiningProgress();
+            graphics.setColor(barBackgroundColor);
+            graphics.fillRect(8, 50, barWidth, barHeight);
+            graphics.setColor(barForegroundColor);
+            graphics.fillRect(8, 50, (int)(barWidth * tempProgress), barHeight);
+            graphics.setColor(textColor);
+        }
+        drawTextRight(graphics, "Pos: " + tempPlayer.getPos().toString(), 20);
     }
     
     public int getWidth() {

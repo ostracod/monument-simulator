@@ -15,6 +15,12 @@ public class Player {
     private Pos climbOffset = new Pos(0, -1);
     private Map<Tile, Integer> inventory = new Hashtable<Tile, Integer>(10);
     private Tile selectedInventoryTile = Tile.BRICK;
+    private boolean isMining = false;
+    private Tile miningTile;
+    private Pos miningTilePos;
+    private Pos miningPlayerPos;
+    private int miningDelay;
+    private int maximumMiningDelay;
     
     private static Pos[] shouldFallOffsetSet = {
         new Pos(-1, 0),
@@ -77,27 +83,47 @@ public class Player {
         return true;
     }
     
-    public void buildOrMine(Pos offset) {
+    public void build(Pos inputPos) {
+        int tempCount = getInventoryCount(selectedInventoryTile);
+        if (tempCount <= 0) {
+            return;
+        }
+        setInventoryCount(selectedInventoryTile, tempCount - 1);
+        world.setTile(inputPos, selectedInventoryTile, true);
+    }
+    
+    public void startMining(Pos inputPos, Tile tile) {
+        int tempDelay = tile.getMiningDelay();
+        if (tempDelay < 0) {
+            return;
+        }
+        isMining = true;
+        miningTile = tile;
+        miningTilePos = inputPos;
+        miningPlayerPos = pos.copy();
+        miningDelay = 0;
+        maximumMiningDelay = tempDelay;
+    }
+    
+    public void finishMining() {
+        world.setTile(miningTilePos, Tile.EMPTY, true);
+        Tile tempDropTile = miningTile.getMiningDrop();
+        if (tempDropTile != null) {
+            int tempCount = getInventoryCount(tempDropTile);
+            setInventoryCount(tempDropTile, tempCount + 1);
+        }
+        isMining = false;
+    }
+    
+    public void buildOrStartMining(Pos offset) {
         Pos tempPos = pos.copy();
         tempPos.add(offset);
-        Tile tempPreviousTile = world.getTile(tempPos, true);
-        Tile tempNextTile;
-        if (tempPreviousTile instanceof EmptyTile) {
-            int tempCount = getInventoryCount(selectedInventoryTile);
-            if (tempCount <= 0) {
-                return;
-            }
-            setInventoryCount(selectedInventoryTile, tempCount - 1);
-            tempNextTile = selectedInventoryTile;
+        Tile tempTile = world.getTile(tempPos, true);
+        if (tempTile instanceof EmptyTile) {
+            build(tempPos);
         } else {
-            tempNextTile = Tile.EMPTY;
-            Tile tempDropTile = tempPreviousTile.getMiningDrop();
-            if (tempDropTile != null) {
-                int tempCount = getInventoryCount(tempDropTile);
-                setInventoryCount(tempDropTile, tempCount + 1);
-            }
+            startMining(tempPos, tempTile);
         }
-        world.setTile(tempPos, tempNextTile, true);
     }
     
     public boolean shouldFall() {
@@ -120,6 +146,19 @@ public class Player {
         if (shouldFall()) {
             move(fallOffset);
         }
+        if (isMining) {
+            Tile tempTile = world.getTile(miningTilePos, true);
+            if (miningTile.getNumber() != tempTile.getNumber()) {
+                isMining = false;
+            } else if (!miningPlayerPos.equals(pos)) {
+                isMining = false;
+            } else {
+                miningDelay += 1;
+                if (miningDelay >= maximumMiningDelay) {
+                    finishMining();
+                }
+            }
+        }
     }
     
     public int getInventoryCount(Tile tile) {
@@ -140,6 +179,14 @@ public class Player {
     
     public Tile getSelectedInventoryTile() {
         return selectedInventoryTile;
+    }
+    
+    public boolean getIsMining() {
+        return isMining;
+    }
+    
+    public double getMiningProgress() {
+        return miningDelay * 1.0 / maximumMiningDelay;
     }
 }
 

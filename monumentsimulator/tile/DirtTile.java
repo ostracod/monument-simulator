@@ -19,6 +19,10 @@ public class DirtTile extends Tile {
         return color;
     }
     
+    public int getMiningDelay() {
+        return 90;
+    }
+    
     public Tile getMiningDrop() {
         return this;
     }

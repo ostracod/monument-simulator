@@ -19,6 +19,10 @@ public class StoneTile extends Tile {
         return color;
     }
     
+    public int getMiningDelay() {
+        return 150;
+    }
+    
     public Tile getMiningDrop() {
         return Tile.BRICK;
     }

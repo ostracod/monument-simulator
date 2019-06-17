@@ -46,9 +46,7 @@ public class MonumentSimulator {
         frame.setVisible(true);
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                world.timerEvent();
-                panel.generateImage();
-                panel.repaint();
+                timerEvent();
             }
         };
         Timer timer = new Timer(33, actionListener);
@@ -83,7 +81,7 @@ public class MonumentSimulator {
         Pos tempOffset = playerOffsetSet[direction];
         Player tempPlayer = panel.getWorld().getPlayer();
         if (shiftKeyIsHeld) {
-            tempPlayer.buildOrMine(tempOffset);
+            tempPlayer.buildOrStartMining(tempOffset);
         } else {
             tempPlayer.walk(tempOffset);
         }
@@ -131,6 +129,12 @@ public class MonumentSimulator {
         if (keyCode == 16) {
             shiftKeyIsHeld = false;
         }
+    }
+    
+    public static void timerEvent() {
+        world.timerEvent();
+        panel.generateImage();
+        panel.repaint();
     }
     
     public static void cleanUp() {

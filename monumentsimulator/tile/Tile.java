@@ -60,6 +60,12 @@ public abstract class Tile {
     
     public abstract int getColor(Pos pos);
     
+    // A negative return value indicates that the tile
+    // cannot be mined.
+    public int getMiningDelay() {
+        return -1;
+    }
+    
     public Tile getMiningDrop() {
         return null;
     }

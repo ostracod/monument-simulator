@@ -19,6 +19,10 @@ public class BrickTile extends Tile {
         return color;
     }
     
+    public int getMiningDelay() {
+        return 30;
+    }
+    
     public Tile getMiningDrop() {
         return this;
     }
