@@ -129,12 +129,14 @@ public class Monument extends Rectangle {
         }
         List<RectangleBoundary> topBoundaryList = new ArrayList<RectangleBoundary>();
         List<RectangleBoundary> bottomBoundaryList = new ArrayList<RectangleBoundary>();
+        boolean shouldAddBoundary;
         int leftPosX;
         int leftPosY;
         int rightPosX;
         int rightPosY;
         int tempPosY;
         // Create the list of top boundaries.
+        shouldAddBoundary = true;
         leftPosX = centerPosX;
         leftPosY = topPosY;
         rightPosX = centerPosX;
@@ -144,20 +146,26 @@ public class Monument extends Rectangle {
             while (leftPosY <= tempPosY) {
                 leftPosX -= 1;
                 leftPosY = seekBoundaryTile(leftPosX, centerPosY + 1, leftPosY, -1);
+                shouldAddBoundary = true;
             }
             while (rightPosY <= tempPosY) {
                 rightPosX += 1;
                 rightPosY = seekBoundaryTile(rightPosX, centerPosY + 1, rightPosY, -1);
+                shouldAddBoundary = true;
             }
-            RectangleBoundary tempBoundary = new RectangleBoundary(
-                tempPosY,
-                leftPosX + 1,
-                rightPosX - 1
-            );
-            topBoundaryList.add(tempBoundary);
+            if (shouldAddBoundary) {
+                RectangleBoundary tempBoundary = new RectangleBoundary(
+                    tempPosY,
+                    leftPosX + 1,
+                    rightPosX - 1
+                );
+                topBoundaryList.add(tempBoundary);
+                shouldAddBoundary = false;
+            }
             tempPosY += 1;
         }
         // Create the list of bottom boundaries.
+        shouldAddBoundary = true;
         leftPosX = centerPosX;
         leftPosY = bottomPosY;
         rightPosX = centerPosX;
@@ -167,17 +175,22 @@ public class Monument extends Rectangle {
             while (leftPosY >= tempPosY) {
                 leftPosX -= 1;
                 leftPosY = seekBoundaryTile(leftPosX, centerPosY - 1, leftPosY, 1);
+                shouldAddBoundary = true;
             }
             while (rightPosY >= tempPosY) {
                 rightPosX += 1;
                 rightPosY = seekBoundaryTile(rightPosX, centerPosY - 1, rightPosY, 1);
+                shouldAddBoundary = true;
             }
-            RectangleBoundary tempBoundary = new RectangleBoundary(
-                tempPosY,
-                leftPosX + 1,
-                rightPosX - 1
-            );
-            bottomBoundaryList.add(tempBoundary);
+            if (shouldAddBoundary) {
+                RectangleBoundary tempBoundary = new RectangleBoundary(
+                    tempPosY,
+                    leftPosX + 1,
+                    rightPosX - 1
+                );
+                bottomBoundaryList.add(tempBoundary);
+                shouldAddBoundary = false;
+            }
             tempPosY -= 1;
         }
         // Find best combination of top boundary and bottom boundary.
