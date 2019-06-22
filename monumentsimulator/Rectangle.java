@@ -3,6 +3,7 @@ package monumentsimulator;
 
 class Rectangle {
     
+    // pos is in the top left corner of the rectangle.
     private Pos pos;
     private int width;
     private int height;

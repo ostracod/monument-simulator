@@ -54,12 +54,19 @@ public class Monument extends Rectangle {
         world = inputWorld;
     }
     
-    private int seekBoundaryTile(int posX, int startPosY, int endPosY, int offsetY) {
+    // directionY must either be -1 or 1.
+    private int seekBoundaryTile(int posX, int startPosY, int endPosY, int directionY) {
+        Pos rectanglePos = getPos();
+        int rectanglePosX = rectanglePos.getX();
+        int rectanglePosY1 = rectanglePos.getY();
+        int rectanglePosY2 = rectanglePosY1 + getHeight() - 1;
+        boolean shouldCheckMonumentSkip = (posX >= rectanglePosX
+            && posX < rectanglePosX + getWidth());
         Pos tempPos = new Pos(posX, 0);
         int tempPosY = startPosY;
         while (true) {
-            int nextPosY = tempPosY + offsetY;
-            if (offsetY < 0) {
+            int nextPosY = tempPosY + directionY;
+            if (directionY < 0) {
                 if (nextPosY < endPosY) {
                     break;
                 }
@@ -68,10 +75,26 @@ public class Monument extends Rectangle {
                     break;
                 }
             }
-            tempPos.setY(nextPosY);
-            Tile tempTile = world.getTile(tempPos, true);
-            if (!(tempTile instanceof BrickTile)) {
-                break;
+            if (shouldCheckMonumentSkip && nextPosY >= rectanglePosY1
+                    && nextPosY <= rectanglePosY2) {
+                if (directionY < 0) {
+                    nextPosY = rectanglePosY1;
+                    if (nextPosY < endPosY) {
+                        return endPosY;
+                    }
+                } else {
+                    nextPosY = rectanglePosY2;
+                    if (nextPosY > endPosY) {
+                        return endPosY;
+                    }
+                }
+                shouldCheckMonumentSkip = false;
+            } else {
+                tempPos.setY(nextPosY);
+                Tile tempTile = world.getTile(tempPos, true);
+                if (!(tempTile instanceof BrickTile)) {
+                    break;
+                }
             }
             tempPosY = nextPosY;
         }
@@ -194,7 +217,11 @@ public class Monument extends Rectangle {
         return output;
     }
     
+    // Assumes that inputPos is inside the monument.
     public Rectangle findLargestSubdivision(Pos inputPos) {
+        if (getArea() == 1) {
+            return new Rectangle(new Pos(0, 0), 0, 0);
+        }
         int inputPosX = inputPos.getX();
         int inputPosY = inputPos.getY();
         Pos pos = getPos();
