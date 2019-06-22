@@ -195,9 +195,31 @@ public class Monument extends Rectangle {
     }
     
     public Rectangle findLargestSubdivision(Pos inputPos) {
-        // TODO: Implement.
-        
-        return new Rectangle(new Pos(0, 0), 0, 0);
+        int inputPosX = inputPos.getX();
+        int inputPosY = inputPos.getY();
+        Pos pos = getPos();
+        int posX1 = pos.getX();
+        int posY1 = pos.getY();
+        int width = getWidth();
+        int height = getHeight();
+        int posX2 = posX1 + width - 1;
+        int posY2 = posY1 + height - 1;
+        Rectangle[] rectangleList = {
+            new Rectangle(new Pos(posX1, posY1), inputPosX - posX1, height),
+            new Rectangle(new Pos(inputPosX + 1, posY1), posX2 - inputPosX, height),
+            new Rectangle(new Pos(posX1, posY1), width, inputPosY - posY1),
+            new Rectangle(new Pos(posX1, inputPosY + 1), width, posY2 - inputPosY),
+        };
+        Rectangle output = rectangleList[0];
+        int index = 1;
+        while (index < rectangleList.length) {
+            Rectangle tempRectangle = rectangleList[index];
+            if (tempRectangle.getArea() > output.getArea()) {
+                output = tempRectangle;
+            }
+            index += 1;
+        }
+        return output;
     }
     
     public void setTileEvent(Pos inputPos, Tile tile) {
