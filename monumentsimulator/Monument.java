@@ -40,35 +40,18 @@ class RectangleBoundary {
     }
 }
 
-public class Monument {
+public class Monument extends Rectangle {
     
-    private Pos pos;
-    private int width;
-    private int height;
     private World world;
     
     public Monument(
-        Pos inputPos,
-        int inputWidth,
-        int inputHeight,
+        Pos pos,
+        int width,
+        int height,
         World inputWorld
     ) {
-        pos = inputPos;
-        width = inputWidth;
-        height = inputHeight;
+        super(pos, width, height);
         world = inputWorld;
-    }
-    
-    public Pos getPos() {
-        return pos;
-    }
-    
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
     }
     
     private int seekBoundaryTile(int posX, int startPosY, int endPosY, int offsetY) {
@@ -95,10 +78,7 @@ public class Monument {
         return tempPosY;
     }
     
-    // Returns an array of two positions: one at the
-    // top left corner, the other at the bottom right
-    // corner.
-    private Pos[] findLargestRectangle(Pos pos) {
+    private Rectangle findLargestRectangle(Pos pos) {
         int centerPosX = pos.getX();
         int centerPosY = pos.getY();
         Pos tempPos = new Pos(centerPosX, 0);
@@ -177,9 +157,9 @@ public class Monument {
             bottomBoundaryList.add(tempBoundary);
             tempPosY -= 1;
         }
+        // Find best combination of top boundary and bottom boundary.
         int bestArea = 0;
-        Pos bestPos1 = new Pos(0, 0);
-        Pos bestPos2 = new Pos(0, 0);
+        Rectangle output = new Rectangle(new Pos(0, 0), 0, 0);
         int topIndex = 0;
         while (topIndex < topBoundaryList.size()) {
             RectangleBoundary topBoundary = topBoundaryList.get(topIndex);
@@ -196,32 +176,39 @@ public class Monument {
                     bottomBoundary.getRightPosX()
                 );
                 int tempPosY2 = bottomBoundary.getPosY();
-                int tempArea = (tempPosX2 - tempPosX1 + 1) * (tempPosY2 - tempPosY1 + 1);
+                int tempWidth = tempPosX2 - tempPosX1 + 1;
+                int tempHeight = tempPosY2 - tempPosY1 + 1;
+                int tempArea = tempWidth * tempHeight;
                 if (tempArea > bestArea) {
                     bestArea = tempArea;
-                    bestPos1.setX(tempPosX1);
-                    bestPos1.setY(tempPosY1);
-                    bestPos2.setX(tempPosX2);
-                    bestPos2.setY(tempPosY2);
+                    Pos tempRectanglePos = output.getPos();
+                    tempRectanglePos.setX(tempPosX1);
+                    tempRectanglePos.setY(tempPosY1);
+                    output.setWidth(tempWidth);
+                    output.setHeight(tempHeight);
                 }
                 bottomIndex += 1;
             }
             topIndex += 1;
         }
-        Pos[] output = {bestPos1, bestPos2};
         return output;
+    }
+    
+    public Rectangle findLargestSubdivision(Pos inputPos) {
+        // TODO: Implement.
+        
+        return new Rectangle(new Pos(0, 0), 0, 0);
     }
     
     public void setTileEvent(Pos inputPos, Tile tile) {
         if (tile instanceof BrickTile) {
-            Pos[] posPair = findLargestRectangle(inputPos);
-            int tempWidth = posPair[1].getX() - posPair[0].getX() + 1;
-            int tempHeight = posPair[1].getY() - posPair[0].getY() + 1;
-            if (tempWidth * tempHeight > width * height) {
-                pos = posPair[0];
-                width = tempWidth;
-                height = tempHeight;
+            Rectangle tempRectangle = findLargestRectangle(inputPos);
+            if (tempRectangle.getArea() > getArea()) {
+                set(tempRectangle);
             }
+        } else if (containsPos(inputPos)) {
+            Rectangle tempRectangle = findLargestSubdivision(inputPos);
+            set(tempRectangle);
         }
     }
 }
