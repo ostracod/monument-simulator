@@ -177,31 +177,51 @@ public class Monument {
             bottomBoundaryList.add(tempBoundary);
             tempPosY -= 1;
         }
-        
-        // TEST CODE.
-        int index;
-        index = 0;
-        while (index < topBoundaryList.size()) {
-            RectangleBoundary tempBoundary = topBoundaryList.get(index);
-            System.out.println(tempBoundary);
-            index += 1;
+        int bestArea = 0;
+        Pos bestPos1 = new Pos(0, 0);
+        Pos bestPos2 = new Pos(0, 0);
+        int topIndex = 0;
+        while (topIndex < topBoundaryList.size()) {
+            RectangleBoundary topBoundary = topBoundaryList.get(topIndex);
+            int bottomIndex = 0;
+            while (bottomIndex < bottomBoundaryList.size()) {
+                RectangleBoundary bottomBoundary = bottomBoundaryList.get(bottomIndex);
+                int tempPosX1 = Math.max(
+                    topBoundary.getLeftPosX(),
+                    bottomBoundary.getLeftPosX()
+                );
+                int tempPosY1 = topBoundary.getPosY();
+                int tempPosX2 = Math.min(
+                    topBoundary.getRightPosX(),
+                    bottomBoundary.getRightPosX()
+                );
+                int tempPosY2 = bottomBoundary.getPosY();
+                int tempArea = (tempPosX2 - tempPosX1 + 1) * (tempPosY2 - tempPosY1 + 1);
+                if (tempArea > bestArea) {
+                    bestArea = tempArea;
+                    bestPos1.setX(tempPosX1);
+                    bestPos1.setY(tempPosY1);
+                    bestPos2.setX(tempPosX2);
+                    bestPos2.setY(tempPosY2);
+                }
+                bottomIndex += 1;
+            }
+            topIndex += 1;
         }
-        index = 0;
-        while (index < bottomBoundaryList.size()) {
-            RectangleBoundary tempBoundary = bottomBoundaryList.get(index);
-            System.out.println(tempBoundary);
-            index += 1;
-        }
-        
-        Pos[] output = {null, null};
+        Pos[] output = {bestPos1, bestPos2};
         return output;
     }
     
-    public void setTileEvent(Pos pos, Tile tile) {
+    public void setTileEvent(Pos inputPos, Tile tile) {
         if (tile instanceof BrickTile) {
-            Pos[] posPair = findLargestRectangle(pos);
-            // TODO: Update the monument.
-            
+            Pos[] posPair = findLargestRectangle(inputPos);
+            int tempWidth = posPair[1].getX() - posPair[0].getX() + 1;
+            int tempHeight = posPair[1].getY() - posPair[0].getY() + 1;
+            if (tempWidth * tempHeight > width * height) {
+                pos = posPair[0];
+                width = tempWidth;
+                height = tempHeight;
+            }
         }
     }
 }
