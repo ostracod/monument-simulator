@@ -20,7 +20,7 @@ public class DirtTile extends Tile {
     }
     
     public int getMiningDelay() {
-        return 90;
+        return 75;
     }
     
     public Tile getMiningDrop() {

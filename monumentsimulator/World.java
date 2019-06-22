@@ -28,6 +28,7 @@ public class World {
     private Pos lookUpPos = new Pos(0, 0);
     private int persistDelay = 0;
     private Player player;
+    private Monument monument = null;
     
     private static Random random = new Random();
     
@@ -50,11 +51,16 @@ public class World {
                 int tempDirtCount = tempStream.readInt();
                 player.setInventoryCount(Tile.BRICK, tempBrickCount);
                 player.setInventoryCount(Tile.DIRT, tempDirtCount);
+                Pos tempMonumentPos = Pos.readFromStream(tempStream);
+                int tempWidth = tempStream.readInt();
+                int tempHeight = tempStream.readInt();
+                monument = new Monument(tempMonumentPos, tempWidth, tempHeight, this);
                 tempStream.close();
             } catch(IOException exception) {
                 System.out.println(exception.getMessage());
             }
         } else {
+            monument = new Monument(new Pos(0, 0), 0, 0, this);
             player = new Player(new Pos(0, -1), this);
         }
         
@@ -81,6 +87,9 @@ public class World {
     public void setTile(Pos pos, Tile tile, boolean shouldBeMature) {
         Chunk tempChunk = getChunk(pos);
         tempChunk.setTile(pos, tile, shouldBeMature);
+        if (monument != null) {
+            monument.setTileEvent(pos, tile);
+        }
     }
     
     public String getChunksPath() {
@@ -95,6 +104,10 @@ public class World {
         return player;
     }
     
+    public Monument getMonument() {
+        return monument;
+    }
+    
     public void persist() {
         System.out.println("Persisting world...");
         try {
@@ -104,6 +117,11 @@ public class World {
             int tempDirtCount = player.getInventoryCount(Tile.DIRT);
             tempStream.writeInt(tempBrickCount);
             tempStream.writeInt(tempDirtCount);
+            monument.getPos().writeToStream(tempStream);
+            int tempWidth = monument.getWidth();
+            int tempHeight = monument.getHeight();
+            tempStream.writeInt(tempWidth);
+            tempStream.writeInt(tempHeight);
             tempStream.close();
         } catch(IOException exception) {
             System.out.println(exception.getMessage());

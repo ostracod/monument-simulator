@@ -105,6 +105,10 @@ public class CustomPanel extends JPanel {
             graphics.setColor(textColor);
         }
         drawTextRight(graphics, "Pos: " + tempPlayer.getPos().toString(), 20);
+        Monument tempMonument = world.getMonument();
+        int tempWidth = tempMonument.getWidth();
+        int tempHeight = tempMonument.getHeight();
+        drawTextRight(graphics, "Score: " + tempWidth + " x " + tempHeight, 40);
     }
     
     public int getWidth() {
