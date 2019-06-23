@@ -67,7 +67,7 @@ public class Pos implements Comparable<Pos> {
     public int hashCode() {
         return (x + 30000) + ((y + 30000) << 16);
     }
-
+    
     @Override
     public boolean equals(Object object) {
         if (object == null) {

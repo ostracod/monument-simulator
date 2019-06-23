@@ -83,8 +83,14 @@ public class MonumentSimulator {
         if (shiftKeyIsHeld) {
             tempPlayer.buildOrStartMining(tempOffset);
         } else {
-            tempPlayer.walk(tempOffset);
+            tempPlayer.startWalking(tempOffset);
         }
+    }
+    
+    public static void stopPlayerWalk(int direction) {
+        Pos tempOffset = playerOffsetSet[direction];
+        Player tempPlayer = panel.getWorld().getPlayer();
+        tempPlayer.stopWalking(tempOffset);
     }
     
     public static void keyPressedEvent(int keyCode) {
@@ -127,6 +133,22 @@ public class MonumentSimulator {
     public static void keyReleasedEvent(int keyCode) {
         if (keyCode == 16) {
             shiftKeyIsHeld = false;
+        }
+        // Left / A.
+        if (keyCode == 37 || keyCode == 65) {
+            stopPlayerWalk(0);
+        }
+        // Right / D.
+        if (keyCode == 39 || keyCode == 68) {
+            stopPlayerWalk(1);
+        }
+        // Up / W.
+        if (keyCode == 38 || keyCode == 87) {
+            stopPlayerWalk(2);
+        }
+        // Down / S.
+        if (keyCode == 40 || keyCode == 83) {
+            stopPlayerWalk(3);
         }
     }
     

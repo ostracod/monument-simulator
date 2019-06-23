@@ -15,6 +15,10 @@ public class Player {
     private Pos climbOffset = new Pos(0, -1);
     private Map<Tile, Integer> inventory = new Hashtable<Tile, Integer>(10);
     private Tile selectedInventoryTile = Tile.BRICK;
+    private boolean isWalking = false;
+    private Pos walkOffset = new Pos(0, 0);
+    private int walkDelay = 0;
+    private int walkRepeatDelay = 0;
     private boolean isMining = false;
     private Tile miningTile;
     private Pos miningTilePos;
@@ -58,16 +62,35 @@ public class Player {
         move(offset);
     }
     
-    public void walk(Pos offset) {
+    public void startWalking(Pos offset) {
+        if (isWalking && walkOffset.equals(offset)) {
+            return;
+        }
+        isWalking = true;
+        walkOffset.set(offset);
+        if (walkDelay <= 0) {
+            walk();
+        }
+        walkRepeatDelay = 10;
+    }
+    
+    public void stopWalking(Pos offset) {
+        if (walkOffset.equals(offset)) {
+            isWalking = false;
+        }
+    }
+    
+    public void walk() {
         if (shouldFall()) {
             return;
         }
-        boolean tempResult = move(offset);
+        walkDelay = 1;
+        boolean tempResult = move(walkOffset);
         if (tempResult) {
             return;
         }
-        if (offset.getY() == 0 && offset.getX() != 0) {
-            climbStep(offset);
+        if (walkOffset.getY() == 0 && walkOffset.getX() != 0) {
+            climbStep(walkOffset);
         }
     }
     
@@ -152,6 +175,14 @@ public class Player {
             }
         } else {
             fallDelay = 0;
+        }
+        if (walkRepeatDelay > 0) {
+            walkRepeatDelay -= 1;
+        }
+        if (walkDelay > 0) {
+            walkDelay -= 1;
+        } else if (isWalking && walkRepeatDelay <= 0) {
+            walk();
         }
         if (isMining) {
             Tile tempTile = world.getTile(miningTilePos);
