@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Pos {
+public class Pos implements Comparable<Pos> {
     
     private int x;
     private int y;
@@ -78,6 +78,15 @@ public class Pos {
         }
         Pos tempPos = (Pos)object;
         return (x == tempPos.getX() && y == tempPos.getY());
+    }
+    
+    @Override
+    public int compareTo(Pos pos) {
+        int tempPosY = pos.getY();
+        if (y != tempPosY) {
+            return tempPosY - y;
+        }
+        return pos.getX() - x;
     }
     
     public String toString() {

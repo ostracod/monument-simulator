@@ -3,8 +3,8 @@ package monumentsimulator;
 
 import java.util.Comparator;
 import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Queue;
+import java.util.PriorityQueue;
 import java.util.Map;
 import java.util.Hashtable;
 import java.util.Random;
@@ -36,9 +36,16 @@ public class World {
     private int fallDelay = 0;
     private Player player;
     private Monument monument = null;
-    private List<Pos> fallingTilePosList = new ArrayList<Pos>();
+    private Queue<Pos> fallingTilePosQueue = new PriorityQueue<Pos>();
     
     private static Random random = new Random();
+    private static Pos[] fallUpdateOffsetSet = {
+        new Pos(-1, -1),
+        new Pos(0, -1),
+        new Pos(1, -1),
+        new Pos(-1, 0),
+        new Pos(1, 0)
+    };
     
     public World() {
         worldDirectory = new File(worldPath);
@@ -117,6 +124,20 @@ public class World {
         if (tile.canFall(pos)) {
             addFallingTilePos(pos);
         }
+        if (tile instanceof EmptyTile) {
+            Pos tempPos = new Pos(0, 0);
+            int index = 0;
+            while (index < fallUpdateOffsetSet.length) {
+                Pos tempOffset = fallUpdateOffsetSet[index];
+                tempPos.set(pos);
+                tempPos.add(tempOffset);
+                Tile tempTile = getTileWithMaturity(tempPos, -1);
+                if (tempTile != null && tempTile.canFall(tempPos)) {
+                    addFallingTilePos(tempPos);
+                }
+                index += 1;
+            }
+        }
     }
     
     public void setTile(Pos pos, Tile tile) {
@@ -164,7 +185,10 @@ public class World {
     }
     
     public void addFallingTilePos(Pos pos) {
-        fallingTilePosList.add(pos.copy());
+        if (fallingTilePosQueue.contains(pos)) {
+            return;
+        }
+        fallingTilePosQueue.add(pos.copy());
     }
     
     private boolean tryDiagonalFall(Pos pos, int offsetX) {
@@ -216,23 +240,10 @@ public class World {
     }
     
     public void processFallingTiles() {
-        List<Pos> tempPosList = fallingTilePosList;
-        fallingTilePosList = new ArrayList<Pos>();
-        Collections.sort(tempPosList, new Comparator<Pos>() {
-            public int compare(Pos pos1, Pos pos2) {
-                int posY1 = pos1.getY();
-                int posY2 = pos2.getY();
-                if (posY1 != posY2) {
-                    return posY2 - posY1;
-                }
-                return pos2.getX() - pos1.getX();
-            }
-        });
-        int index = 0;
-        while (index < tempPosList.size()) {
-            Pos tempPos = tempPosList.get(index);
-            processFallingTilePos(tempPos);
-            index += 1;
+        Queue<Pos> tempPosQueue = fallingTilePosQueue;
+        fallingTilePosQueue = new PriorityQueue<Pos>();
+        for (Pos pos : tempPosQueue) {
+            processFallingTilePos(pos);
         }
     }
     
@@ -245,7 +256,7 @@ public class World {
         }
         fallDelay += 1;
         if (fallDelay > 1) {
-            if (fallingTilePosList.size() > 0) {
+            if (fallingTilePosQueue.size() > 0) {
                 processFallingTiles();
             }
             fallDelay = 0;
