@@ -1,8 +1,9 @@
 
 package monumentsimulator;
 
+import java.util.Set;
 import java.util.Map;
-import java.util.Hashtable;
+import java.util.TreeMap;
 
 import monumentsimulator.tile.Tile;
 import monumentsimulator.tile.EmptyTile;
@@ -13,7 +14,7 @@ public class Player {
     private World world;
     private Pos fallOffset = new Pos(0, 1);
     private Pos climbOffset = new Pos(0, -1);
-    private Map<Tile, Integer> inventory = new Hashtable<Tile, Integer>(10);
+    private Map<Tile, Integer> inventory = new TreeMap<Tile, Integer>();
     private Tile selectedInventoryTile = Tile.BRICK;
     private boolean isWalking = false;
     private Pos walkOffset = new Pos(0, 0);
@@ -27,6 +28,7 @@ public class Player {
     private int maximumMiningDelay;
     private int fallDelay = 0;
     
+    private static int maximumInventorySize = 100;
     private static Pos[] shouldFallOffsetSet = {
         new Pos(-1, 0),
         new Pos(1, 0),
@@ -116,7 +118,21 @@ public class Player {
         world.setTile(inputPos, selectedInventoryTile);
     }
     
+    public int getInventorySize() {
+        int output = 0;
+        Set<Tile> tileSet = inventory.keySet();
+        for (Tile tile : tileSet) {
+            output += inventory.get(tile);
+        }
+        return output;
+    }
+    
     public void startMining(Pos inputPos, Tile tile) {
+        int tempSize = getInventorySize();
+        if (tempSize >= maximumInventorySize) {
+            world.displayMessage("Inventory full!");
+            return;
+        }
         int tempDelay = tile.getMiningDelay();
         if (tempDelay < 0) {
             return;

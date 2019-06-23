@@ -104,6 +104,10 @@ public class CustomPanel extends JPanel {
             graphics.fillRect(8, 50, (int)(barWidth * tempProgress), barHeight);
             graphics.setColor(textColor);
         }
+        String tempMessage = world.getMessageToDisplay();
+        if (tempMessage != null) {
+            graphics.drawString(tempMessage, 8, 60);
+        }
         drawTextRight(graphics, "Pos: " + tempPlayer.getPos().toString(), 20);
         Monument tempMonument = world.getMonument();
         int tempWidth = tempMonument.getWidth();

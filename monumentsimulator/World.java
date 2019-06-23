@@ -37,6 +37,9 @@ public class World {
     private Player player;
     private Monument monument = null;
     private Queue<Pos> fallingTilePosQueue = new PriorityQueue<Pos>();
+    private boolean isDisplayingMessage = false;
+    private String message;
+    private int messageDelay;
     
     private static Random random = new Random();
     private static Pos[] fallUpdateOffsetSet = {
@@ -261,6 +264,12 @@ public class World {
             }
             fallDelay = 0;
         }
+        if (isDisplayingMessage) {
+            messageDelay -= 1;
+            if (messageDelay <= 0) {
+                isDisplayingMessage = false;
+            }
+        }
     }
     
     public void addStoneCluster(Pos inputPos) {
@@ -284,6 +293,20 @@ public class World {
             tempPos.add(tempOffset);
             setTileWithMaturity(tempPos, Tile.STONE, 0);
             tempOffset.advance(1, 0, tempSize);
+        }
+    }
+    
+    public void displayMessage(String inputMessage) {
+        isDisplayingMessage = true;
+        message = inputMessage;
+        messageDelay = 20;
+    }
+    
+    public String getMessageToDisplay() {
+        if (isDisplayingMessage) {
+            return message;
+        } else {
+            return null;
         }
     }
 }

@@ -8,7 +8,7 @@ import java.awt.Color;
 
 import monumentsimulator.Pos;
 
-public abstract class Tile {
+public abstract class Tile implements Comparable<Tile> {
     
     public static Tile EMPTY;
     public static Tile DIRT;
@@ -42,20 +42,8 @@ public abstract class Tile {
     }
     
     @Override
-    public int hashCode() {
-        return getNumber();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object == null) {
-            return false;
-        }
-        if (!(object instanceof Tile)) {
-            return false;
-        }
-        Tile tempTile = (Tile)object;
-        return (number == tempTile.getNumber());
+    public int compareTo(Tile tile) {
+        return tile.getNumber() - number;
     }
     
     public abstract int getColor(Pos pos);
