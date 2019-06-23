@@ -20,7 +20,7 @@ public class StoneTile extends Tile {
     }
     
     public int getMiningDelay() {
-        return 120;
+        return 90;
     }
     
     public Tile getMiningDrop() {
