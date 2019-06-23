@@ -63,7 +63,7 @@ public class CustomPanel extends JPanel {
         while (tempOffset.getY() < bufferedImageSize) {
             tempPos.set(cameraPos);
             tempPos.add(tempOffset);
-            Tile tempTile = world.getTile(tempPos, true);
+            Tile tempTile = world.getTile(tempPos);
             pixelArray[index] = tempTile.getColor(tempPos);
             index += 1;
             tempOffset.advance(1, 0, bufferedImageSize);

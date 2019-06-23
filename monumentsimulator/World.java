@@ -1,6 +1,10 @@
 
 package monumentsimulator;
 
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Hashtable;
 import java.util.Random;
@@ -29,6 +33,7 @@ public class World {
     private int persistDelay = 0;
     private Player player;
     private Monument monument = null;
+    private List<Pos> fallingTilePosList = new ArrayList<Pos>();
     
     private static Random random = new Random();
     
@@ -66,30 +71,51 @@ public class World {
         
     }
     
-    public Chunk getChunk(Pos pos) {
+    public Chunk getChunk(Pos pos, int maturity) {
         // We use lookUpPos to avoid creating a Pos instance
         // every time we want to find a chunk.
         lookUpPos.set(pos);
         Chunk.convertPosToChunkPos(lookUpPos);
         Chunk output = chunkMap.get(lookUpPos);
         if (output == null) {
+            if (maturity < 0) {
+                return null;
+            }
             output = new Chunk(lookUpPos.copy(), this);
             chunkMap.put(lookUpPos, output);
         }
+        output.advanceMaturity(maturity);
         return output;
     }
     
-    public Tile getTile(Pos pos, boolean shouldBeMature) {
-        Chunk tempChunk = getChunk(pos);
-        return tempChunk.getTile(pos, shouldBeMature);
+    public Tile getTileWithMaturity(Pos pos, int maturity) {
+        Chunk tempChunk = getChunk(pos, maturity);
+        if (tempChunk == null) {
+            return null;
+        }
+        return tempChunk.getTile(pos);
     }
     
-    public void setTile(Pos pos, Tile tile, boolean shouldBeMature) {
-        Chunk tempChunk = getChunk(pos);
-        tempChunk.setTile(pos, tile, shouldBeMature);
+    public Tile getTile(Pos pos) {
+        return getTileWithMaturity(pos, Chunk.maximumMaturity);
+    }
+    
+    public void setTileWithMaturity(Pos pos, Tile tile, int maturity) {
+        Chunk tempChunk = getChunk(pos, maturity);
+        if (tempChunk == null) {
+            return;
+        }
+        tempChunk.setTile(pos, tile);
         if (monument != null) {
             monument.setTileEvent(pos, tile);
         }
+        if (tile.canFall(pos)) {
+            fallingTilePosList.add(pos.copy());
+        }
+    }
+    
+    public void setTile(Pos pos, Tile tile) {
+        setTileWithMaturity(pos, tile, Chunk.maximumMaturity);
     }
     
     public String getChunksPath() {
@@ -132,12 +158,38 @@ public class World {
         System.out.println("Finished persisting world.");
     }
     
+    public void processFallingTilePos(Pos pos) {
+        // TODO: Implement.
+        
+        System.out.println(pos);
+    }
+    
     public void timerEvent() {
         player.timerEvent();
         persistDelay += 1;
         if (persistDelay > 1800) {
             persist();
             persistDelay = 0;
+        }
+        if (fallingTilePosList.size() > 0) {
+            List<Pos> tempPosList = fallingTilePosList;
+            fallingTilePosList = new ArrayList<Pos>();
+            Collections.sort(tempPosList, new Comparator<Pos>() {
+                public int compare(Pos pos1, Pos pos2) {
+                    int posY1 = pos1.getY();
+                    int posY2 = pos2.getY();
+                    if (posY1 != posY2) {
+                        return posY2 - posY1;
+                    }
+                    return pos2.getX() - pos1.getX();
+                }
+            });
+            int index = 0;
+            while (index < tempPosList.size()) {
+                Pos tempPos = tempPosList.get(index);
+                processFallingTilePos(tempPos);
+                index += 1;
+            }
         }
     }
     
@@ -149,7 +201,7 @@ public class World {
         while (tempOffset.getY() < tempSize) {
             tempPos.set(inputPos);
             tempPos.add(tempOffset);
-            Tile tempTile = getTile(tempPos, false);
+            Tile tempTile = getTileWithMaturity(tempPos, 0);
             if (tempTile instanceof StoneTile) {
                 return;
             }
@@ -160,7 +212,7 @@ public class World {
         while (tempOffset.getY() < tempSize) {
             tempPos.set(inputPos);
             tempPos.add(tempOffset);
-            setTile(tempPos, Tile.STONE, false);
+            setTileWithMaturity(tempPos, Tile.STONE, 0);
             tempOffset.advance(1, 0, tempSize);
         }
     }

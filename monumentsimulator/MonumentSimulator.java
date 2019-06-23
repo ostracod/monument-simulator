@@ -88,7 +88,6 @@ public class MonumentSimulator {
     }
     
     public static void keyPressedEvent(int keyCode) {
-        System.out.println("Key pressed! " + keyCode);
         if (keyCode == 16) {
             shiftKeyIsHeld = true;
         }

@@ -70,6 +70,10 @@ public abstract class Tile {
         return null;
     }
     
+    public boolean canFall(Pos pos) {
+        return false;
+    }
+    
     public static Tile getTileFromNumber(int inputNumber) {
         return tileList.get(inputNumber);
     }

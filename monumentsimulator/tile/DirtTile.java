@@ -26,6 +26,10 @@ public class DirtTile extends Tile {
     public Tile getMiningDrop() {
         return this;
     }
+    
+    public boolean canFall(Pos pos) {
+        return (pos.getY() < 0);
+    }
 }
 
 

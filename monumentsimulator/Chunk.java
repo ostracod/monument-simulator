@@ -17,6 +17,7 @@ import monumentsimulator.tile.Tile;
 public class Chunk {
     
     public static int size = 256;
+    public static int maximumMaturity = 2;
     
     private static Random random = new Random();
     
@@ -24,6 +25,7 @@ public class Chunk {
     private Pos pos;
     private byte[] tileNumberList = new byte[size * size];
     // Maturity values:
+    // -1 = Missing chunk.
     // 0 = Just solid dirt.
     // 1 = Stone clusters populated in current chunk.
     // 2 = Stone clusters populated in adjacent chunks.
@@ -78,7 +80,7 @@ public class Chunk {
         }
     }
     
-    public void advanceMaturity(byte inputMaturity) {
+    public void advanceMaturity(int inputMaturity) {
         if (maturity == 0 && inputMaturity > 0) {
             addStoneClusters();
             maturity = 1;
@@ -89,8 +91,7 @@ public class Chunk {
             while (tempOffset.getY() <= size) {
                 tempPos.set(pos);
                 tempPos.add(tempOffset);
-                Chunk tempChunk = world.getChunk(tempPos);
-                tempChunk.advanceMaturity((byte)1);
+                Chunk tempChunk = world.getChunk(tempPos, 1);
                 tempOffset.advance(size, -size, size * 2);
             }
             maturity = 2;
@@ -103,19 +104,13 @@ public class Chunk {
         return offsetX + offsetY * size;
     }
     
-    public Tile getTile(Pos inputPos, boolean shouldBeMature) {
-        if (shouldBeMature && maturity < 2) {
-            advanceMaturity((byte)2);
-        }
+    public Tile getTile(Pos inputPos) {
         int index = getPosTileIndex(inputPos);
         byte tempTileNumber = tileNumberList[index];
         return Tile.getTileFromNumber(tempTileNumber);
     }
     
-    public void setTile(Pos inputPos, Tile tile, boolean shouldBeMature) {
-        if (shouldBeMature && maturity < 2) {
-            advanceMaturity((byte)2);
-        }
+    public void setTile(Pos inputPos, Tile tile) {
         byte tempNextTileNumber = tile.getNumber();
         int index = getPosTileIndex(inputPos);
         byte tempPreviousTileNumber = tileNumberList[index];

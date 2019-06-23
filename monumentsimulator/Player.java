@@ -33,7 +33,7 @@ public class Player {
     public Player(Pos inputPos, World inputWorld) {
         pos = inputPos;
         world = inputWorld;
-        world.setTile(pos, Tile.PLAYER, true);
+        world.setTile(pos, Tile.PLAYER);
     }
     
     public Pos getPos() {
@@ -46,7 +46,7 @@ public class Player {
         Pos tempPos = pos.copy();
         tempPos.add(climbOffset);
         tempPos.add(offset);
-        Tile tempTile = world.getTile(tempPos, true);
+        Tile tempTile = world.getTile(tempPos);
         if (!(tempTile instanceof EmptyTile)) {
             return;
         }
@@ -73,13 +73,13 @@ public class Player {
     public boolean move(Pos offset) {
         Pos tempNextPos = pos.copy();
         tempNextPos.add(offset);
-        Tile tempTile = world.getTile(tempNextPos, true);
+        Tile tempTile = world.getTile(tempNextPos);
         if (!(tempTile instanceof EmptyTile)) {
             return false;
         }
-        world.setTile(pos, Tile.EMPTY, true);
+        world.setTile(pos, Tile.EMPTY);
         pos.set(tempNextPos);
-        world.setTile(pos, Tile.PLAYER, false);
+        world.setTile(pos, Tile.PLAYER);
         return true;
     }
     
@@ -89,7 +89,7 @@ public class Player {
             return;
         }
         setInventoryCount(selectedInventoryTile, tempCount - 1);
-        world.setTile(inputPos, selectedInventoryTile, true);
+        world.setTile(inputPos, selectedInventoryTile);
     }
     
     public void startMining(Pos inputPos, Tile tile) {
@@ -106,7 +106,7 @@ public class Player {
     }
     
     public void finishMining() {
-        world.setTile(miningTilePos, Tile.EMPTY, true);
+        world.setTile(miningTilePos, Tile.EMPTY);
         Tile tempDropTile = miningTile.getMiningDrop();
         if (tempDropTile != null) {
             int tempCount = getInventoryCount(tempDropTile);
@@ -118,7 +118,7 @@ public class Player {
     public void buildOrStartMining(Pos offset) {
         Pos tempPos = pos.copy();
         tempPos.add(offset);
-        Tile tempTile = world.getTile(tempPos, true);
+        Tile tempTile = world.getTile(tempPos);
         if (tempTile instanceof EmptyTile) {
             build(tempPos);
         } else {
@@ -133,7 +133,7 @@ public class Player {
             Pos tempOffset = shouldFallOffsetSet[index];
             tempPos.set(pos);
             tempPos.add(tempOffset);
-            Tile tempTile = world.getTile(tempPos, true);
+            Tile tempTile = world.getTile(tempPos);
             if (!(tempTile instanceof EmptyTile)) {
                 return false;
             }
@@ -147,7 +147,7 @@ public class Player {
             move(fallOffset);
         }
         if (isMining) {
-            Tile tempTile = world.getTile(miningTilePos, true);
+            Tile tempTile = world.getTile(miningTilePos);
             if (miningTile.getNumber() != tempTile.getNumber()) {
                 isMining = false;
             } else if (!miningPlayerPos.equals(pos)) {

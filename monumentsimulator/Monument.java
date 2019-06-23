@@ -91,7 +91,7 @@ public class Monument extends Rectangle {
                 shouldCheckMonumentSkip = false;
             } else {
                 tempPos.setY(nextPosY);
-                Tile tempTile = world.getTile(tempPos, true);
+                Tile tempTile = world.getTile(tempPos);
                 if (!(tempTile instanceof BrickTile)) {
                     break;
                 }
@@ -111,7 +111,7 @@ public class Monument extends Rectangle {
         while (true) {
             int nextPosY = topPosY - 1;
             tempPos.setY(nextPosY);
-            Tile tempTile = world.getTile(tempPos, true);
+            Tile tempTile = world.getTile(tempPos);
             if (!(tempTile instanceof BrickTile)) {
                 break;
             }
@@ -121,7 +121,7 @@ public class Monument extends Rectangle {
         while (true) {
             int nextPosY = bottomPosY + 1;
             tempPos.setY(nextPosY);
-            Tile tempTile = world.getTile(tempPos, true);
+            Tile tempTile = world.getTile(tempPos);
             if (!(tempTile instanceof BrickTile)) {
                 break;
             }
