@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import monumentsimulator.tile.Tile;
+import monumentsimulator.tile.EmptyTile;
 import monumentsimulator.tile.StoneTile;
 
 public class World {
@@ -29,8 +30,10 @@ public class World {
     private File chunksDirectory;
     private File stateFile;
     private Map<Pos, Chunk> chunkMap = new Hashtable<Pos, Chunk>(100);
-    private Pos lookUpPos = new Pos(0, 0);
+    private Pos scratchPos1 = new Pos(0, 0);
+    private Pos scratchPos2 = new Pos(0, 0);
     private int persistDelay = 0;
+    private int fallDelay = 0;
     private Player player;
     private Monument monument = null;
     private List<Pos> fallingTilePosList = new ArrayList<Pos>();
@@ -72,17 +75,19 @@ public class World {
     }
     
     public Chunk getChunk(Pos pos, int maturity) {
-        // We use lookUpPos to avoid creating a Pos instance
+        // We use scratchPos1 to avoid creating a Pos instance
         // every time we want to find a chunk.
-        lookUpPos.set(pos);
-        Chunk.convertPosToChunkPos(lookUpPos);
-        Chunk output = chunkMap.get(lookUpPos);
+        scratchPos1.set(pos);
+        Chunk.convertPosToChunkPos(scratchPos1);
+        Chunk output = chunkMap.get(scratchPos1);
         if (output == null) {
             if (maturity < 0) {
                 return null;
             }
-            output = new Chunk(lookUpPos.copy(), this);
-            chunkMap.put(lookUpPos, output);
+            Pos tempPos = scratchPos1.copy();
+            output = new Chunk(tempPos, this);
+            chunkMap.put(tempPos, output);
+            output.addFallingTiles();
         }
         output.advanceMaturity(maturity);
         return output;
@@ -110,7 +115,7 @@ public class World {
             monument.setTileEvent(pos, tile);
         }
         if (tile.canFall(pos)) {
-            fallingTilePosList.add(pos.copy());
+            addFallingTilePos(pos);
         }
     }
     
@@ -158,10 +163,77 @@ public class World {
         System.out.println("Finished persisting world.");
     }
     
+    public void addFallingTilePos(Pos pos) {
+        fallingTilePosList.add(pos.copy());
+    }
+    
+    private boolean tryDiagonalFall(Pos pos, int offsetX) {
+        pos.setX(pos.getX() + offsetX);
+        Tile tempTile = getTileWithMaturity(pos, -1);
+        if (!(tempTile instanceof EmptyTile)) {
+            return false;
+        }
+        pos.setY(pos.getY() + 1);
+        tempTile = getTileWithMaturity(pos, -1);
+        return (tempTile instanceof EmptyTile);
+    }
+    
+    public boolean getFallPos(Pos destination, Pos pos) {
+        destination.setX(pos.getX());
+        destination.setY(pos.getY() + 1);
+        Tile tempTile = getTileWithMaturity(destination, -1);
+        if (tempTile instanceof EmptyTile) {
+            return true;
+        }
+        int tempOffsetX;
+        if (random.nextInt(2) == 0) {
+            tempOffsetX = 1;
+        } else {
+            tempOffsetX = -1;
+        }
+        boolean tempResult;
+        destination.set(pos);
+        tempResult = tryDiagonalFall(destination, tempOffsetX);
+        if (tempResult) {
+            return true;
+        }
+        destination.set(pos);
+        tempResult = tryDiagonalFall(destination, -tempOffsetX);
+        return tempResult;
+    }
+    
     public void processFallingTilePos(Pos pos) {
-        // TODO: Implement.
-        
-        System.out.println(pos);
+        Tile tempTile = getTile(pos);
+        if (!tempTile.canFall(pos)) {
+            return;
+        }
+        boolean tempResult = getFallPos(scratchPos2, pos);
+        if (!tempResult) {
+            return;
+        }
+        setTile(pos, Tile.EMPTY);
+        setTile(scratchPos2, tempTile);
+    }
+    
+    public void processFallingTiles() {
+        List<Pos> tempPosList = fallingTilePosList;
+        fallingTilePosList = new ArrayList<Pos>();
+        Collections.sort(tempPosList, new Comparator<Pos>() {
+            public int compare(Pos pos1, Pos pos2) {
+                int posY1 = pos1.getY();
+                int posY2 = pos2.getY();
+                if (posY1 != posY2) {
+                    return posY2 - posY1;
+                }
+                return pos2.getX() - pos1.getX();
+            }
+        });
+        int index = 0;
+        while (index < tempPosList.size()) {
+            Pos tempPos = tempPosList.get(index);
+            processFallingTilePos(tempPos);
+            index += 1;
+        }
     }
     
     public void timerEvent() {
@@ -171,33 +243,20 @@ public class World {
             persist();
             persistDelay = 0;
         }
-        if (fallingTilePosList.size() > 0) {
-            List<Pos> tempPosList = fallingTilePosList;
-            fallingTilePosList = new ArrayList<Pos>();
-            Collections.sort(tempPosList, new Comparator<Pos>() {
-                public int compare(Pos pos1, Pos pos2) {
-                    int posY1 = pos1.getY();
-                    int posY2 = pos2.getY();
-                    if (posY1 != posY2) {
-                        return posY2 - posY1;
-                    }
-                    return pos2.getX() - pos1.getX();
-                }
-            });
-            int index = 0;
-            while (index < tempPosList.size()) {
-                Pos tempPos = tempPosList.get(index);
-                processFallingTilePos(tempPos);
-                index += 1;
+        fallDelay += 1;
+        if (fallDelay > 1) {
+            if (fallingTilePosList.size() > 0) {
+                processFallingTiles();
             }
+            fallDelay = 0;
         }
     }
     
     public void addStoneCluster(Pos inputPos) {
         int tempSize = 6 + random.nextInt(15);
+        Pos tempPos = new Pos(0, 0);
         // Make sure that the cluster does not collide with other clusters.
         Pos tempOffset = new Pos(0, 0);
-        Pos tempPos = new Pos(0, 0);
         while (tempOffset.getY() < tempSize) {
             tempPos.set(inputPos);
             tempPos.add(tempOffset);

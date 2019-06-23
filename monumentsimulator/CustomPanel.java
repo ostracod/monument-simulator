@@ -57,9 +57,9 @@ public class CustomPanel extends JPanel {
         Pos tempPlayerPos = world.getPlayer().getPos();
         cameraPos.setX(tempPlayerPos.getX() - bufferedImageSize / 2);
         cameraPos.setY(tempPlayerPos.getY() - bufferedImageSize / 2);
+        Pos tempPos = new Pos(0, 0);
         int index = 0;
         Pos tempOffset = new Pos(0, 0);
-        Pos tempPos = new Pos(0, 0);
         while (tempOffset.getY() < bufferedImageSize) {
             tempPos.set(cameraPos);
             tempPos.add(tempOffset);

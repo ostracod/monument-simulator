@@ -65,9 +65,30 @@ public class Chunk {
         }
     }
     
-    public void addStoneClusters() {
-        Pos tempOffset = new Pos(0, 0);
+    public void addFallingTiles() {
         Pos tempPos = new Pos(0, 0);
+        Pos tempFallPos = new Pos(0, 0);
+        // Check immediately outside the perimeter of the
+        // chunk as well in case any falling tiles
+        // are stuck at a chunk boundary.
+        Pos tempOffset = new Pos(-1, -1);
+        while (tempOffset.getY() < size + 1) {
+            tempPos.set(pos);
+            tempPos.add(tempOffset);
+            Tile tempTile = world.getTileWithMaturity(tempPos, -1);
+            if (tempTile != null && tempTile.canFall(tempPos)) {
+                boolean tempResult = world.getFallPos(tempFallPos, tempPos);
+                if (tempResult) {
+                    world.addFallingTilePos(tempPos);
+                }
+            }
+            tempOffset.advance(1, 0, size + 1);
+        }
+    }
+    
+    public void addStoneClusters() {
+        Pos tempPos = new Pos(0, 0);
+        Pos tempOffset = new Pos(0, 0);
         while (tempOffset.getY() < size) {
             tempPos.set(pos);
             tempPos.add(tempOffset);

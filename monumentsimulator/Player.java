@@ -21,6 +21,7 @@ public class Player {
     private Pos miningPlayerPos;
     private int miningDelay;
     private int maximumMiningDelay;
+    private int fallDelay = 0;
     
     private static Pos[] shouldFallOffsetSet = {
         new Pos(-1, 0),
@@ -144,7 +145,13 @@ public class Player {
     
     public void timerEvent() {
         if (shouldFall()) {
-            move(fallOffset);
+            fallDelay += 1;
+            if (fallDelay > 1) {
+                move(fallOffset);
+                fallDelay = 0;
+            }
+        } else {
+            fallDelay = 0;
         }
         if (isMining) {
             Tile tempTile = world.getTile(miningTilePos);
