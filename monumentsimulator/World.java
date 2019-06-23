@@ -23,7 +23,7 @@ import monumentsimulator.tile.StoneTile;
 
 public class World {
     
-    private String worldPath = "./monumentWorld";
+    private String worldPath = Paths.get(".", "monumentWorld").toString();
     private String chunksPath = Paths.get(worldPath, "chunks").toString();
     private String statePath = Paths.get(worldPath, "state.dat").toString();
     private File worldDirectory;

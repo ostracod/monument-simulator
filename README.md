@@ -4,7 +4,7 @@
 To build:
 
 ```
-javac ./monumentsimulator/*.java ./monumentsimulator/tile/*.java
+javac --release 8 ./monumentsimulator/*.java ./monumentsimulator/tile/*.java
 ```
 
 To run:
