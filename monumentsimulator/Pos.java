@@ -63,6 +63,12 @@ public class Pos implements Comparable<Pos> {
         }
     }
     
+    public int getNaiveDistance(Pos pos) {
+        int tempDistance1 = Math.abs(x - pos.getX());
+        int tempDistance2 = Math.abs(y - pos.getY());
+        return Math.max(tempDistance1, tempDistance2);
+    }
+    
     @Override
     public int hashCode() {
         return (x + 30000) + ((y + 30000) << 16);

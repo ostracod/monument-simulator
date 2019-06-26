@@ -19,4 +19,8 @@ To package:
 jar cmf ./manifest.mf ./MonumentSimulator.jar ./monumentsimulator/*.class ./monumentsimulator/tile/*.class
 ```
 
+For more information, please visit this page:
+
+http://ostracodfiles.com/monument/main.html
+
 

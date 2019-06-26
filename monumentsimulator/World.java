@@ -3,6 +3,8 @@ package monumentsimulator;
 
 import java.util.Comparator;
 import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.Map;
@@ -181,8 +183,18 @@ public class World {
         } catch(IOException exception) {
             System.out.println(exception.getMessage());
         }
+        List<Chunk> tempChunkList = new ArrayList<Chunk>();
         for (Chunk chunk : chunkMap.values()) {
             chunk.persist();
+            tempChunkList.add(chunk);
+        }
+        Pos tempPlayerPos = player.getPos();
+        for (Chunk chunk : tempChunkList) {
+            Pos tempPos = chunk.getPos();
+            int tempDistance = tempPlayerPos.getNaiveDistance(tempPos);
+            if (tempDistance > 700) {
+                chunkMap.remove(tempPos);
+            }
         }
         System.out.println("Finished persisting world.");
     }
@@ -230,8 +242,8 @@ public class World {
     }
     
     public void processFallingTilePos(Pos pos) {
-        Tile tempTile = getTile(pos);
-        if (!tempTile.canFall(pos)) {
+        Tile tempTile = getTileWithMaturity(pos, -1);
+        if (tempTile == null || !tempTile.canFall(pos)) {
             return;
         }
         boolean tempResult = getFallPos(scratchPos2, pos);

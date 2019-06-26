@@ -119,6 +119,10 @@ public class Chunk {
         }
     }
     
+    public Pos getPos() {
+        return pos;
+    }
+    
     private int getPosTileIndex(Pos inputPos) {
         int offsetX = inputPos.getX() - pos.getX();
         int offsetY = inputPos.getY() - pos.getY();
